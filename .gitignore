@@ -14,6 +14,7 @@ __pycache__/
 *.spec
 
 env/
+virtual/
 
 # Installer logs
 pip-log.txt
