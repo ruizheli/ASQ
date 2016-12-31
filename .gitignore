@@ -13,7 +13,7 @@ __pycache__/
 *.manifest
 *.spec
 
-env/
+env/bin
 
 # Installer logs
 pip-log.txt
