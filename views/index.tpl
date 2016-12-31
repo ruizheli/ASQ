@@ -10,7 +10,7 @@
     <div class="col-md-4">
         <h2>Getting started</h2>
         <p>
-            Bottle gives you a powerful, patterns-based way to build dynamic websites that
+            ASQ gives you a powerful, patterns-based way to build dynamic websites that
             enables a clean separation of concerns and gives you full control over markup
             for enjoyable, agile development.
         </p>
