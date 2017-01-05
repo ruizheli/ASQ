@@ -11,6 +11,12 @@ import subprocess
 import sys
 import tempfile
 import wave
+import base64
+
+# Import Google Speech API
+from googleapiclient import discovery
+import httplib2
+from oauth2client.client import GoogleCredentials
 
 from progressbar import ProgressBar, Percentage, Bar, ETA
 
@@ -22,6 +28,17 @@ import pysrt
 
 text_type = unicode if sys.version_info < (3,) else str
 
+DISCOVERY_URL = ('https://{api}.googleapis.com/$discovery/rest?'
+                 'version={apiVersion}')
+
+def get_speech_service():
+    credentials = GoogleCredentials.get_application_default().create_scoped(
+        ['https://www.googleapis.com/auth/cloud-platform'])
+    http = httplib2.Http()
+    credentials.authorize(http)
+
+    return discovery.build(
+        'speech', 'v1beta1', http=http, discoveryServiceUrl=DISCOVERY_URL)
 
 def force_unicode(s, encoding="utf-8"):
     if isinstance(s, text_type):
@@ -198,7 +215,7 @@ class FLACConverter(object):
 
 
 class SpeechRecognizer(object):
-    def __init__(self, language="en", rate=44100, retries=3, api_key=GOOGLE_SPEECH_API_KEY):
+    def __init__(self, language="en-IN", rate=44100, retries=3, api_key=GOOGLE_SPEECH_API_KEY):
         self.language = language
         self.rate = rate
         self.api_key = api_key
@@ -207,11 +224,33 @@ class SpeechRecognizer(object):
     def __call__(self, data):
         try:
             for i in range(self.retries):
+
+                # speech_content = base64.b64encode(data)
+                # service = get_speech_service()
+                # service_request = service.speech().syncrecognize(
+                #     body={
+                #         'config': {
+                #             'encoding': 'FLAC',  # FLAC
+                #             'sampleRate': self.rate,  # default rate for the audio file
+                #             'languageCode': self.language,  # a BCP-47 language tag
+                #         },
+                #         'audio': {
+                #             'content': speech_content.decode('UTF-8')
+                #             }
+                #         })
+                # # [END construct_request]
+                # # [START send_request]
+                # response = service_request.execute()
+                # line = ""
+                # for sentences in response['results']:
+                #     transcript = sentences['alternatives'][0]
+                #     line = line + transcript['transcript']
+                # [END send_request]
                 url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
                 headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
 
                 try:
-             		resp = requests.post(url, data=data, headers=headers)
+                    resp = requests.post(url, data=data, headers=headers)
                 except requests.exceptions.ConnectionError:
                     continue
 
@@ -219,7 +258,7 @@ class SpeechRecognizer(object):
                     try:
                         line = json.loads(line)
                         line = line['result'][0]['alternative'][0]['transcript']
-			return line[:1].upper() + line[1:]
+                        return line[:1].upper() + line[1:]
                     except:
                         # no result
                         continue
@@ -336,6 +375,7 @@ def main():
     parser.add_argument('-D', '--dst-language', help="Desired language for the subtitles", default="en")
     parser.add_argument('-K', '--api-key',
                         help="The Google Translate API key to be used. (Required for subtitle translation)")
+    parser.add_argument('-V', '--video', help="Input a video file to transcribe")
     parser.add_argument('--list-formats', help="List all available subtitle formats", action='store_true')
     parser.add_argument('--list-languages', help="List all available source/destination languages", action='store_true')
 
@@ -366,11 +406,24 @@ def main():
             "Destination language not supported. Run with --list-languages to see all supported languages.")
         return 1
 
-    if not args.source_path:
+    if not args.source_path and not args.video:
         print("Error: You need to specify a source path.")
         return 1
 
-    audio_filename, audio_rate = extract_audio(args.source_path)
+    if args.video:
+        print("Transcribe video to audio")
+        temp = tempfile.NamedTemporaryFile(prefix="audio_", suffix='.flac')
+        temp_name = temp.name
+        command = "ffmpeg -i %s -y -ab 160k -ac 1 -ar 44100 -vn %s" %(args.video, temp_name)
+        subprocess.call(command, shell=True)
+        source_path = temp_name
+        output_path = args.video
+
+    if not args.video:
+        source_path = args.source_path
+        output_path = args.source_path
+
+    audio_filename, audio_rate = extract_audio(source_path)
 
     regions = find_speech_regions(audio_filename)
 
@@ -430,7 +483,7 @@ def main():
     dest = args.output
 
     if not dest:
-        base, ext = os.path.splitext(args.source_path)
+        base, ext = os.path.splitext(output_path)
         dest = "{base}.{format}".format(base=base, format=args.format)
 
     with open(dest, 'wb') as f:
