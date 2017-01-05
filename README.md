@@ -1,5 +1,4 @@
-# BottleAppAzure [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+# ASQ - Answer Student Questions
 
-Bottle is a fast, simple and lightweight WSGI micro web-framework for Python. It is distributed as a single file module and has no dependencies other than the Python Standard Library.
-- [Get Started](http://bottlepy.org/docs/dev/index.html)
-- [Development blog](http://blog.bottlepy.org/)
+We are building a system which collects audio/video recordings from teachers and let students look up with keywords based on the actual verbal content. ASQ will also match each audio/video file with the syllabus or text book of this course to estimate the possible inputs that students would enter in order to increase the accuracy of voice recognition.
+
