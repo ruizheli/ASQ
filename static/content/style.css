@@ -1,0 +1,36 @@
+html {
+	  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+header {
+	background: #2F99E8;
+	color: #FFFFFF;
+}
+
+.top-heading {
+	text-align: center;
+	padding-top: 140px;
+	padding-bottom: 80px;
+}
+
+.header-name {
+	font-size: 50px;
+}
+
+.centered {
+	text-align: center;
+}
+
+.preview-image {
+
+}
+
+.footer {
+	padding-top: 20px;
+	padding-bottom: 30px;
+	background-color: #99979c;
+}
+
+.break {
+	padding-top: 50px;
+}
