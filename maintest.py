@@ -18,6 +18,7 @@ s = ''
 for i in d:
 	s = s + ' ' + i['content']
 
+
 # Whoosh the search engine
 schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
 if not os.path.exists("index"):
@@ -33,3 +34,4 @@ with ix.searcher() as searcher:
 	print(results[0])
 
 
+json_data.close()
