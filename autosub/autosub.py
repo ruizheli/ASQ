@@ -477,6 +477,10 @@ def main():
             return 1
 
     timed_subtitles = [(r, t) for r, t in zip(regions, transcripts) if t]
+
+
+
+
     formatter = FORMATTERS.get(args.format)
     formatted_subtitles = formatter(timed_subtitles)
 
@@ -490,6 +494,10 @@ def main():
         f.write(formatted_subtitles.encode("utf-8"))
 
     print "Subtitles file created at {}".format(dest)
+
+
+
+
 
     os.remove(audio_filename)
 
