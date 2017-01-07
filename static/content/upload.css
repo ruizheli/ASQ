@@ -1,0 +1,55 @@
+html {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+header {
+	background: #2F99E8;
+	color: #FFFFFF;
+	padding-top: 0px;
+	padding-bottom: 15px;
+}
+
+.searchBox {
+	padding-top: 25px;
+}
+
+
+.footer {
+	padding-top: 20px;
+	padding-bottom: 30px;
+	background-color: #99979c;
+}
+
+#progress_bar {
+	margin: 10px 0;
+	padding: 0px;
+	border: 1px solid #99ccff;
+	font-size: 14px;
+	clear: both;
+	opacity: 1.0;
+	-moz-transition: opacity 1s linear;
+	-o-transition: opacity 1s linear;
+	-webkit-transition: opacity 1s linear;
+}
+
+#progress_bar.loading {
+	opacity: 1.0;
+}
+
+#progress_bar .percent {
+	background-color: #99ccff;
+	height: auto;
+	width: 0;
+}
+
+#drop_zone {
+	margin: 10px 0;
+	padding: 0px;
+	border: 1px solid #99ccff;
+	font-size: 14px;
+	clear: both;
+	opacity: 1.0;
+	-moz-transition: opacity 1s linear;
+	-o-transition: opacity 1s linear;
+	-webkit-transition: opacity 1s linear;
+}
