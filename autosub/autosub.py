@@ -78,6 +78,7 @@ FORMATTERS = {
 }
 
 GOOGLE_SPEECH_API_KEY = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+# GOOGLE_SPEECH_API_KEY = "AIzaSyBdrYmI_ZiZ7dey_ymBd-BlLZkw4IvoLZ0"
 GOOGLE_SPEECH_API_URL = "http://www.google.com/speech-api/v2/recognize?client=chromium&lang={lang}&key={key}"
 
 LANGUAGE_CODES = {
@@ -225,43 +226,46 @@ class SpeechRecognizer(object):
         try:
             for i in range(self.retries):
 
-                # speech_content = base64.b64encode(data)
-                # service = get_speech_service()
-                # service_request = service.speech().syncrecognize(
-                #     body={
-                #         'config': {
-                #             'encoding': 'FLAC',  # FLAC
-                #             'sampleRate': self.rate,  # default rate for the audio file
-                #             'languageCode': self.language,  # a BCP-47 language tag
-                #         },
-                #         'audio': {
-                #             'content': speech_content.decode('UTF-8')
-                #             }
-                #         })
-                # # [END construct_request]
-                # # [START send_request]
-                # response = service_request.execute()
-                # line = ""
-                # for sentences in response['results']:
-                #     transcript = sentences['alternatives'][0]
-                #     line = line + transcript['transcript']
+                speech_content = base64.b64encode(data)
+                service = get_speech_service()
+                service_request = service.speech().syncrecognize(
+                    body={
+                        'config': {
+                            # There are a bunch of config options you can specify. See
+                            # https://goo.gl/KPZn97 for the full list.
+                            'encoding': 'FLAC',  # FLAC
+                            'sampleRate': self.rate,  # default rate for the audio file
+                            'languageCode': self.language,  # a BCP-47 language tag
+                        },
+                        'audio': {
+                            'content': speech_content.decode('UTF-8')
+                            }
+                        })
+                # [END construct_request]
+                # [START send_request]
+                response = service_request.execute()
+                line = ""
+                for sentences in response['results']:
+                    transcript = sentences['alternatives'][0]
+                    line = line + transcript['transcript']
                 # [END send_request]
-                url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
-                headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
+                return line[:1].upper() + line[1:]
+                # url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
+                # headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
 
-                try:
-                    resp = requests.post(url, data=data, headers=headers)
-                except requests.exceptions.ConnectionError:
-                    continue
+                # try:
+                #     resp = requests.post(url, data=data, headers=headers)
+                # except requests.exceptions.ConnectionError:
+                #     continue
 
-                for line in resp.content.split("\n"):
-                    try:
-                        line = json.loads(line)
-                        line = line['result'][0]['alternative'][0]['transcript']
-                        return line[:1].upper() + line[1:]
-                    except:
-                        # no result
-                        continue
+                # for line in resp.content.split("\n"):
+                #     try:
+                #         line = json.loads(line)
+                #         line = line['result'][0]['alternative'][0]['transcript']
+                #         return line[:1].upper() + line[1:]
+                #     except:
+                #         # no result
+                #         continue
 
         except KeyboardInterrupt:
             return
