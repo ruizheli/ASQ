@@ -7,7 +7,136 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8">
+					<h1>Answer Students Questions</h1>
+				</div>
+				<div class="col-md-4">
+					<div class="searchBox">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="What do you want to learn?">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button">Go</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	<div class="container">
+		<br>
+		<h2>Upload Video</h2>
+		<br>
+
+		<div class="container">
+			<form action="#" method="get">
+
+			<style>
+			    #progress_bar {
+					margin: 10px 0;
+					padding: 0px;
+					border: 1px solid #99ccff;
+					font-size: 14px;
+					clear: both;
+					opacity: 1.0;
+					-moz-transition: opacity 1s linear;
+					-o-transition: opacity 1s linear;
+					-webkit-transition: opacity 1s linear;
+			    }
+			    #progress_bar.loading {
+					opacity: 1.0;
+			    }
+			    #progress_bar .percent {
+					background-color: #99ccff;
+					height: auto;
+					width: 0;
+			    }
+			    #drop_zone {
+			    	margin: 10px 0;
+					padding: 0px;
+					border: 1px solid #99ccff;
+					font-size: 14px;
+					clear: both;
+					opacity: 1.0;
+					-moz-transition: opacity 1s linear;
+					-o-transition: opacity 1s linear;
+					-webkit-transition: opacity 1s linear;
+			    }.b-card
+			</style>
+
+			<div id="drop_zone">Drop files here</div>
+			<output id="list"></output>
+
+			<input type="file" id="files" name="file" />
+			<button onclick="abortRead();">Cancel read</button>
+			<div id="progress_bar"><div class="percent">0%</div></div>
+
+			<!-- "Container/table" -->
+
+			<div>
+				<!-- Left col -->
+				<div style="width:49%; display:inline-block;">
+					Title: <input type="text" name="title">
+				</div>
+
+				<!-- Right col -->
+				<div style="width:49%; display:inline-block;">
+					Author: <input type="text" name="author"/>
+				</div>
+			</div>
+
+			<br><br>
+
+			<div style="width:49%; display:inline-block;">
+				Subject: <input type="text" name="subject"/>
+			</div>
+
+			<br><br>
+			Description:<br>
+			<textarea name="textcontent" cols="40" rows="2"></textarea>
+			<br><br>
+
+			Tags Demo:
+			<input id="tags" type="text">
+			<!-- <input type="text" value="" name="tags" disabled="disabled"> <br> -->
+			Tags: <div id="tags-output" style="display:inline-block; vertical-align:top;"></div> <br>
+
+			</form>
+		</div>
+
+	</div>
+	
+	<br>
+	<div class="footer">
+		<footer>
+		<div class="container">
+			<h3>About</h3>
+			<p>Answer Students Questions is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
+			<p> We are building a system which collects audio/video recordings from teachers and let students look up with keywords based on the actual verbal content. ASQ will also match each audio/video file with the syllabus or text book of this course to estimate the possible inputs that students would enter in order to increase the accuracy of voice recognition.</p>
+		</div>  
+		</footer>
+	</div>
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+
 	<script type="text/javascript">
+		// Prevent default drag and drop
+	    window.addEventListener("dragover",function(e){
+		    e = e || event;
+		    e.preventDefault();
+		},false);
+		window.addEventListener("drop",function(e){
+		    e = e || event;
+		    e.preventDefault();
+		},false);
+
 		document.addEventListener("DOMContentLoaded", function() {
 			var textarea = document.getElementById("tags");
 			var tagOut = document.getElementById("tags-output");
@@ -19,14 +148,14 @@
 					var div = document.createElement("div");
 					div.innerHTML = tag;
 					
-					div.style.border = "1px solid silver";
+					div.style.border = "Gpx solid silver";
 					div.style.borderRadius = "4px";
 					div.style.display = "inline-block";
 					div.style.padding = ".25em 1em .25em 1em";
 
 					div.addEventListener("click", function() {
 						div.parentNode.removeChild(div);
-						hidden.value = hidden.value.replace(div.innerHTML + " ", "");
+						// hidden.value = hidden.value.replace(div.innerHTML + " ", "");
 					});
 					
 					return div;
@@ -42,174 +171,143 @@
 					tagOut.appendChild( makeTagDiv(match[1]) );
 
 					// e.g. add tag (match[1]) to hidden fild's list
-					hidden.value += match[1] + " ";
+					// hidden.value += match[1] + " ";
 				}
 
 			});
 		});
 	</script>
-</head>
-<body>
-	<header>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-8">
-					<h1>Answer Students Questions</h1>
-				</div>
-				<div class="col-md-4">
-					<div class="searchBox">
-						<div class="input-group">
-					        <input type="text" class="form-control" placeholder="What do you want to learn?">
-					        <span class="input-group-btn">
-					        	<button class="btn btn-default" type="button">Go</button>
-					      	</span>
-					    </div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
 
-		
-	
-	<div class="container">
-		<br>
-		<h2>Upload Video</h2>
-		<br>
+	<!-- Scripts for file drag/drop -->
+	<script>
+		var reader;
+	    var progress = document.querySelector('.percent');
 
-		<div class="container">
-			<form action="#" method="get">
+	    function abortRead() {
+			reader.abort();
+			document.getElementById("files").disabled = false;
+	    }
 
-			<style>
-  #progress_bar {
-    margin: 10px 0;
-    padding: 3px;
-    border: 1px solid #000;
-    font-size: 14px;
-    clear: both;
-    opacity: 0;
-    -moz-transition: opacity 1s linear;
-    -o-transition: opacity 1s linear;
-    -webkit-transition: opacity 1s linear;
-  }
-  #progress_bar.loading {
-    opacity: 1.0;
-  }
-  #progress_bar .percent {
-    background-color: #99ccff;
-    height: auto;
-    width: 0;
-  }
-</style>
+	    function errorHandler(evt) {
+		    switch(evt.target.error.code) {
+		  		case evt.target.error.NOT_FOUND_ERR:
+					alert('File Not Found!');
+					break;
+		    	case evt.target.error.NOT_READABLE_ERR:
+					alert('File is not readable');
+					break;
+		    	case evt.target.error.ABORT_ERR:
+					break; // noop
+		  		default:
+					alert('An error occurred reading this file.');
+			};
+	    }
 
-<input type="file" id="files" name="file" />
-<button onclick="abortRead();">Cancel read</button>
-<div id="progress_bar"><div class="percent">0%</div></div>
+	    // Progress bar update
+	    function updateProgress(evt) {
+			// evt is an ProgressEvent.
+			if (evt.lengthComputable) {
+		  		var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+		  		// Increase the progress bar length.
+		  		if (percentLoaded < 100) {
+					progress.style.width = percentLoaded + '%';
+					progress.textContent = percentLoaded + '%';
+		  		}
+			}
+	  	}
 
-<script>
-  var reader;
-  var progress = document.querySelector('.percent');
+	  	// Select file
+	  	function handleFileSelect(evt) {
+			document.getElementById("files").disabled = true;
+			document.getElementById("drop_zone").style.display = "none";
 
-  function abortRead() {
-    reader.abort();
-  }
+			progress.style.width = '0%';
+			progress.textContent = '0%';
 
-  function errorHandler(evt) {
-    switch(evt.target.error.code) {
-      case evt.target.error.NOT_FOUND_ERR:
-        alert('File Not Found!');
-        break;
-      case evt.target.error.NOT_READABLE_ERR:
-        alert('File is not readable');
-        break;
-      case evt.target.error.ABORT_ERR:
-        break; // noop
-      default:
-        alert('An error occurred reading this file.');
-    };
-  }
+			reader = new FileReader();
+			reader.onerror = errorHandler;
+			reader.onprogress = updateProgress;
+			reader.onabort = function(e) {
+		  		alert('File read cancelled');
+			};
+			reader.onloadstart = function(e) {
+			  	document.getElementById('progress_bar').className = 'loading';
+			};
+			reader.onload = function(e) {
+				// Ensure that the progress bar displays 100% at the end.
+				progress.style.width = '100%';
+				progress.textContent = '100%';
+				setTimeout("document.getElementById('progress_bar').className='';", 2000);
+			}
 
-  function updateProgress(evt) {
-    // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
-    }
-  }
+			// Read in the image file as a binary string.
+			reader.readAsBinaryString(evt.target.files[0]);
 
-  function handleFileSelect(evt) {
-    // Reset progress indicator on new file selection.
-    progress.style.width = '0%';
-    progress.textContent = '0%';
+			var output = [];
+	    	for (var i = 0, f; f = evt.target.files[i]; i++) {
+	      		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+	                  		f.size, ' bytes, last modified: ',
+	                  		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+	                  		'</li>');
+	    	}
+	    	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+	  	}
 
-    reader = new FileReader();
-    reader.onerror = errorHandler;
-    reader.onprogress = updateProgress;
-    reader.onabort = function(e) {
-      alert('File read cancelled');
-    };
-    reader.onloadstart = function(e) {
-      document.getElementById('progress_bar').className = 'loading';
-    };
-    reader.onload = function(e) {
-      // Ensure that the progress bar displays 100% at the end.
-      progress.style.width = '100%';
-      progress.textContent = '100%';
-      setTimeout("document.getElementById('progress_bar').className='';", 2000);
-    }
+	  	// Drop file
+	  	function handleFileDropped(evt) {
+	  		document.getElementById("files").disabled = true;
+	  		document.getElementById("drop_zone").style.display = "none";
 
-    // Read in the image file as a binary string.
-    reader.readAsBinaryString(evt.target.files[0]);
-  }
+	    	evt.stopPropagation();
+	    	evt.preventDefault();
 
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
-</script>
+	    	var files = evt.dataTransfer.files; // FileList object.
 
-			<!-- "Container/table" -->
-			<div>
-				<!-- Left col -->
-				<div style="width:49%; display:inline-block;">
-					Title: <input type="text" name="title">
-				</div>
+	    	progress.style.width = '0%';
+			progress.textContent = '0%';
 
-				<!-- Right col -->
-				<div style="width:49%; display:inline-block;">
-					Author: <input type="text" name="author"/>
-				</div>
-			</div>
+			reader = new FileReader();
+			reader.onerror = errorHandler;
+			reader.onprogress = updateProgress;
+			reader.onabort = function(e) {
+		  		alert('File read cancelled');
+			};
+			reader.onloadstart = function(e) {
+			  	document.getElementById('progress_bar').className = 'loading';
+			};
+			reader.onload = function(e) {
+				// Ensure that the progress bar displays 100% at the end.
+				progress.style.width = '100%';
+				progress.textContent = '100%';
+				setTimeout("document.getElementById('progress_bar').className='';", 2000);
+			}
 
-			<br><br>
-			Description:<br>
-			<textarea name="textcontent" cols="40" rows="2"></textarea>
-			<br><br>
+			// Read in the image file as a binary string.
+			reader.readAsBinaryString(files[0]);
 
-			Tags Demo:
-			<input id="tags" type="text">
-			<input type="text" value="" name="tags" disabled="disabled"> <br>
-			Tags: <div id="tags-output" style="display:inline-block; vertical-align:top;"></div> <br>
+	    	// files is a FileList of File objects. List some properties.
+	    	var output = [];
+	    	for (var i = 0, f; f = files[i]; i++) {
+	      		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+	                  		f.size, ' bytes, last modified: ',
+	                  		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+	                  		'</li>');
+	    	}
+	    	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+	  	}
 
-			</form>
-		</div>
+	  	function handleDragOver(evt) {
+	    	evt.stopPropagation();
+	    	evt.preventDefault();
+	    	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+	  	}
 
-	</div>
-	
+	  	// Setup the dnd listeners.
+	  	var dropZone = document.getElementById('drop_zone');
+	  	dropZone.addEventListener('dragover', handleDragOver, false);
+	  	dropZone.addEventListener('drop', handleFileDropped, false);
 
+	  	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	</script>
 
-	<br>
-	<div class="footer">
-		<footer>
-		<div class="container">
-			<h3>About</h3>
-			<p>Answer Students Questions is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
-			<p> We are building a system which collects audio/video recordings from teachers and let students look up with keywords based on the actual verbal content. ASQ will also match each audio/video file with the syllabus or text book of this course to estimate the possible inputs that students would enter in order to increase the accuracy of voice recognition.</p>
-		</div>	
-		</footer>
-	</div>
-
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-</body>
 </html>
