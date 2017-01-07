@@ -327,7 +327,7 @@ def extract_audio(filename, channels=1, rate=16000):
     return temp.name, rate
 
 
-def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_region_size=6):
+def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_region_size=5):
     reader = wave.open(filename)
     sample_width = reader.getsampwidth()
     rate = reader.getframerate()
@@ -350,19 +350,32 @@ def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_regio
     regions = []
     region_start = None
 
+    # for energy in energies:
+    #     is_silence = energy <= threshold
+    #     max_exceeded = region_start and elapsed_time - region_start >= max_region_size
+    #     if (max_exceeded or is_silence) and region_start:
+    #         if elapsed_time - region_start >= min_region_size:
+    #             regions.append((region_start, elapsed_time))
+    #         	region_start = None
+
+    #     elif (not region_start) and (not is_silence):
+    #         region_start = elapsed_time
+    #     elapsed_time += chunk_duration
+
+    # Canceled min
     for energy in energies:
         is_silence = energy <= threshold
         max_exceeded = region_start and elapsed_time - region_start >= max_region_size
 
-	if (max_exceeded or is_silence) and region_start:
-            if elapsed_time - region_start >= min_region_size:
+        if is_silence and region_start:
+            if max_exceeded:
                 regions.append((region_start, elapsed_time))
-            	region_start = None
+                region_start = None
 
         elif (not region_start) and (not is_silence):
             region_start = elapsed_time
-        
-	elapsed_time += chunk_duration
+        elapsed_time += chunk_duration
+    regions.append((region_start, elapsed_time))
 
     return regions
 
