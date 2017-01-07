@@ -34,3 +34,7 @@ def about():
         message='Your application description page.',
         year=datetime.now().year
     )
+
+@route('/hello')
+def hello():
+    return "Hello World!"
