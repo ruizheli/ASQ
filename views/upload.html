@@ -70,10 +70,13 @@
 			    }.b-card
 			</style>
 
-			<div id="drop_zone">Drop files here</div>
+			<div id="drop_zone">
+				Drop files here
+				<input type="file" id="files" name="file" />
+			</div>
 			<output id="list"></output>
 
-			<input type="file" id="files" name="file" />
+			<!-- <input type="file" id="files" name="file" /> -->
 			<button onclick="abortRead();">Cancel read</button>
 			<div id="progress_bar"><div class="percent">0%</div></div>
 
