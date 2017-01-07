@@ -15,26 +15,35 @@ def home():
         year=datetime.now().year
     )
 
-@route('/contact')
-@view('contact')
-def contact():
-    """Renders the contact page."""
+@route('/upload')
+@view('upload')
+def upload():
+    """Renders the info page."""
     return dict(
-        title='Contact',
-        message='Your contact page.',
+        title='Upload Video',
         year=datetime.now().year
     )
 
-@route('/about')
-@view('about')
-def about():
-    """Renders the about page."""
-    return dict(
-        title='About',
-        message='Your application description page.',
-        year=datetime.now().year
-    )
+# @route('/contact')
+# @view('contact')
+# def contact():
+#     """Renders the contact page."""
+#     return dict(
+#         title='Contact',
+#         message='Your contact page.',
+#         year=datetime.now().year
+#     )
 
-@route('/hello')
-def hello():
-    return "Hello World!"
+# @route('/about')
+# @view('about')
+# def about():
+#     """Renders the about page."""
+#     return dict(
+#         title='About',
+#         message='Your application description page.',
+#         year=datetime.now().year
+#     )
+
+# @route('/hello')
+# def hello():
+#     return "Hello World!"
