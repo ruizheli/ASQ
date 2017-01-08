@@ -13,6 +13,10 @@ header {
 	padding-top: 25px;
 }
 
+.logo, .logo:hover{
+	color: white;
+	text-decoration: none;
+}
 
 .footer {
 	padding-top: 20px;
@@ -43,7 +47,7 @@ header {
 }
 
 #drop_zone {
-	margin: 10px 0;
+	/*margin: 10px 0;
 	padding: 0px;
 	border: 1px solid #99ccff;
 	font-size: 14px;
@@ -51,5 +55,12 @@ header {
 	opacity: 1.0;
 	-moz-transition: opacity 1s linear;
 	-o-transition: opacity 1s linear;
-	-webkit-transition: opacity 1s linear;
+	-webkit-transition: opacity 1s linear;*/
+	padding-top: 30px;
+	padding-bottom: 30px;
+	padding-left: 50px;
+	padding-right: 50px;
+	text-align: center;
+	background-color: #add8e6;
 }
+
