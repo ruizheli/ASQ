@@ -24,26 +24,20 @@ def upload():
         year=datetime.now().year
     )
 
-# @route('/contact')
-# @view('contact')
-# def contact():
-#     """Renders the contact page."""
-#     return dict(
-#         title='Contact',
-#         message='Your contact page.',
-#         year=datetime.now().year
-#     )
+@route('/upload/upload_success')
+@view('upload_success')
+def upload_success():
+    """Renders the info page."""
+    return dict(
+        title='Upload Success',
+        year=datetime.now().year
+    )
 
-# @route('/about')
-# @view('about')
-# def about():
-#     """Renders the about page."""
-#     return dict(
-#         title='About',
-#         message='Your application description page.',
-#         year=datetime.now().year
-#     )
-
-# @route('/hello')
-# def hello():
-#     return "Hello World!"
+@route('/upload/upload_fail')
+@view('upload_fail')
+def upload_success():
+    """Renders the info page."""
+    return dict(
+        title='Upload Success',
+        year=datetime.now().year
+    )
