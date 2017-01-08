@@ -3,17 +3,19 @@
 <head>
 	<title>Upload Recording</title>
 	<link rel="stylesheet" type="text/css" href="/static/content/upload.css">
+	<!--Bootstrap-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
+	<!--Bootstrap Select-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
 </head>
 <body>
 	<header>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8">
-					<h1>Answer Students Questions</h1>
+					<h1><a href="#" class="logo">Answer Students Questions</a></h1>
 				</div>
 				<div class="col-md-4">
 					<div class="searchBox">
@@ -37,11 +39,13 @@
 		<div class="container">
 			<form action="#" method="get">
 
-				<div id="drop_zone">Drop files here</div>
+				<div id="drop_zone">
+					Drop files here <br>
+					<input type="file" id="files" name="file" />
+				</div>
 				<output id="list"></output>
 
-				<input type="file" id="files" name="file" />
-				<button onclick="abortRead();">Cancel read</button>
+				<button onclick="abortRead();">Cancel Upload</button>
 				<div id="progress_bar"><div class="percent ">0%</div></div>
 
 				<div class="progress">
@@ -54,27 +58,30 @@
 				<p>All fields marked with <font color="red">*</font> are quired</p>
 				<div class="row">
 
-					<!-- Left col -->
-					<div class="col-md-5">
+					<div class="col-md-4">
 						Title <font color="red">*</font>: <input type="text" class="form-control" name="title"><br>
-						Course Name: <input type="text" class="form-control" name="subject"/><br>
-						Educational Institution: <input type="text" class="form-control" name="subject"/><br>
-						Subject: <input type="text" class="form-control" name="subject"/><br>
-						Tags: <input id="tags" class="form-control" type="text"><br>
-						<!-- <input type="text" value="" name="tags" disabled="disabled"> <br> -->
-						Tags Entered: <div id="tags-output" style="display:inline-block; vertical-align:top;"></div> <br>
+						Author: <font color="red">*</font>: <input type="text" class="form-control" name="author"/><br>
+						Course: <input type="text" class="form-control" name="course"/><br>
+						Educational Institution: <input type="text" class="form-control" name="school"/><br>
 					</div>
-
-					<!-- Right col -->
-					<div class="col-md-5">
+					<div class="col-md-4">
 						Categories <font color="red">*</font>: <br>
-						Author <font color="red">*</font>: <input type="text" class="form-control" name="author"/><br>
+						<select class="selectpicker" name=subject title="Pick your category here">
+						  <option>Computer Science</option>
+						  <option>Biology</option>
+						  <option>Business</option>
+						</select>
+						<br><br>
+						Tags: <font color="red">*</font> 
+						<div id="tags-output" style="display:inline-block;"></div><br>
+						<input id="tags" class="form-control" type="text"><br>
+						<!-- <input type="text" value="" name="tags" disabled="disabled"> <br> -->
 						Description:<br>
-						<textarea name="textcontent" cols="40" rows="2" class="form-control"></textarea>
+						<textarea name="textcontent" cols="40" rows="4" class="form-control" name="description"></textarea><br>
 					</div>
 				</div>
-
-				<br><br>
+				<br>
+				<input type="submit" class="btn btn-default" value="Submit">
 				<br><br>
 
 			</form>
@@ -94,7 +101,10 @@
 	</div>
 
 	<script src="/static/scripts/upload.js"></script>
+	<!--Bootstrap-->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<!--Bootstrap Select-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
 </body>
 
 </html>

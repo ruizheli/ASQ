@@ -1,3 +1,7 @@
+$(".logo").on("click", function(){
+	$(location).attr('href', 'home');
+})
+
 //Read Tags
 document.addEventListener("DOMContentLoaded", function() {
 	var textarea = document.getElementById("tags");
