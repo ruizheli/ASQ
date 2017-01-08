@@ -365,6 +365,18 @@ def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_regio
     #         region_start = elapsed_time
     #     elapsed_time += chunk_duration
 
+    # for energy in energies:
+    #     is_silence = energy <= threshold
+    #     max_exceeded = region_start and elapsed_time - region_start >= max_region_size
+    #     if (max_exceeded or is_silence) and region_start:
+    #         if elapsed_time - region_start >= min_region_size:
+    #             regions.append((region_start, elapsed_time))
+    #         	region_start = None
+
+    #     elif (not region_start) and (not is_silence):
+    #         region_start = elapsed_time
+    #     elapsed_time += chunk_duration
+
     # Canceled min
     for energy in energies:
         is_silence = energy <= threshold
