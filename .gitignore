@@ -13,6 +13,7 @@ $py.class
 *.manifest
 *.spec
 
+env/
 virtual/
 resources/
 virtualenv/
