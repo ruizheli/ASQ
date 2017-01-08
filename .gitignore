@@ -13,7 +13,6 @@ __pycache__/
 *.manifest
 *.spec
 
-env/
 virtual/
 resources/
 virtualenv/
