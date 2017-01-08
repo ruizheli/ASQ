@@ -26,4 +26,4 @@ def get_times(keys,transcript_timed_dir,key_time_map_dir):
 	key_time_map_file.write(json.dumps(key_time_map))
 	key_time_map_file.close()
 
-get_times(['video'], './transcripts/DFA.json','./transcripts/test2.json')
+get_times(['work','start'], './transcripts/DFA.json','./transcripts/test2.json')
