@@ -17,7 +17,7 @@ env/
 virtual/
 resources/
 virtualenv/
-.DS_Store:
+.DS_Store
 
 # Installer logs
 pip-log.txt
