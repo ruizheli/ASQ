@@ -1,0 +1,27 @@
+1
+00:00:00,512 --> 00:00:08,448
+This video we're going to work at complete problem of converting a regular session to a DFA we're going to start by writing down the regular expression
+
+2
+00:00:08,704 --> 00:00:15,360
+Turning out to an NFA and then converting that to a DFA so the problem we're going to work is
+
+3
+00:00:15,616 --> 00:00:20,736
+X followed by X or Y
+
+4
+00:00:20,992 --> 00:00:28,672
+Star War Z so some strings it would be accepted by that would be just
+
+5
+00:00:29,440 --> 00:00:36,864
+Just as I myself or just acts by itself or Acts
+
+6
+00:00:38,144 --> 00:00:44,800
+How about a x/y x would be okay xyy
+
+7
+00:00:45,312 --> 00:00:47,872
+Basically X4 by any combination of x
