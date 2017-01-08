@@ -1,5 +1,5 @@
 from bottle import route, run, template, view, redirect, post, request
-import pyodbc
+# import pyodbc
 
 # @route('/upload/upload_data')
 # def upload_data():
