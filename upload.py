@@ -34,8 +34,8 @@ def upload_data():
 
 
 
-	# title = request.forms.get('title')
-	# author = request.forms.get('author')
+	title = request.forms.get('title')
+	author = request.forms.get('author')
 
 	# conn = pymssql.connect(server='asq-bottle.database.windows.net',user='ruizheli@asq-bottle.database.windows.net', password='Fzj990418.', database='asq-bottle')
 	# cursor = conn.cursor()
