@@ -24,6 +24,10 @@ header {
 	background-color: #99979c;
 }
 
+.hidden {
+	display: none;
+}
+
 #progress_bar {
 	margin: 10px 0;
 	padding: 0px;
@@ -56,11 +60,18 @@ header {
 	-moz-transition: opacity 1s linear;
 	-o-transition: opacity 1s linear;
 	-webkit-transition: opacity 1s linear;*/
-	padding-top: 30px;
-	padding-bottom: 30px;
-	padding-left: 50px;
-	padding-right: 50px;
-	text-align: center;
-	background-color: #add8e6;
+	color: #ccc;
+  	border-style: dashed;
+  	border-color: #ccc;
+  	line-height: 200px;
+  	text-align: center;
+    height: 200px;
+  	border-width: 2px;
+  	margin-bottom: 20px;
+}
+
+#drop_zone.drop {
+  color: #222;
+  border-color: #222;
 }
 

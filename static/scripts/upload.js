@@ -2,6 +2,22 @@ $(".logo").on("click", function(){
 	$(location).attr('href', 'home');
 })
 
+var tags;
+
+//Validate Form
+function validateForm() {
+    var author = document.forms["upload_form"]["author"].value;
+    var title = document.forms["upload_form"]["title"].value;
+    var category = document.forms["upload_form"]["category"].value;
+    var tags = document.forms["upload_form"]["tags"].value;
+
+    if (author == "" || title == "" || category == "" || tags == "") {
+        alert("All fields marked with * are required");
+        return false;
+    }
+}
+
+
 //Read Tags
 document.addEventListener("DOMContentLoaded", function() {
 	var textarea = document.getElementById("tags");
@@ -14,20 +30,20 @@ document.addEventListener("DOMContentLoaded", function() {
 			var div = document.createElement("div");
 			div.innerHTML = tag;
 			
-			div.style.border = "Gpx solid silver";
-			div.style.borderRadius = "4px";
+			div.style.border = "1px solid silver";
+			div.style.borderRadius = "3px";
 			div.style.display = "inline-block";
 			div.style.padding = ".25em 1em .25em 1em";
 
 			div.addEventListener("click", function() {
 				div.parentNode.removeChild(div);
-				// hidden.value = hidden.value.replace(div.innerHTML + " ", "");
+				hidden.value = hidden.value.replace(div.innerHTML + " ", "");
 			});
 			
 			return div;
 		}
 
-		console.log( textarea.value );
+		//console.log( textarea.value );
 
 		while(true) {
 			var match = /(\w+)(,|\s+)/.exec(textarea.value);
@@ -36,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			textarea.value = textarea.value.replace(/.*(,|\s+)/, "");
 			tagOut.appendChild( makeTagDiv(match[1]) );
 
-			// e.g. add tag (match[1]) to hidden fild's list
-			// hidden.value += match[1] + " ";
+			hidden.value += match[1] + " ";
 		}
 
 	});
@@ -57,6 +72,13 @@ window.addEventListener("drop",function(e){
 	e.preventDefault();
 },false);
 
+
+
+// Setup the dnd listeners.
+var dropZone = document.getElementById('drop_zone');
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileDropped, false);
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 
 //Progress Bar
@@ -101,7 +123,16 @@ if (evt.lengthComputable) {
 // Select file
 function handleFileSelect(evt) {
 	document.getElementById("files").disabled = true;
-	document.getElementById("drop_zone").style.display = "none";
+
+	uploadhint = document.getElementsByClassName("upload_hint");
+	for (var i = 0; i < uploadhint.length; i++) {
+		uploadhint[i].style.display = 'none';
+	}
+
+	uploadshow = document.getElementsByClassName("upload_show");
+	for (var i = 0; i < uploadshow.length; i++) {
+		uploadshow[i].style.display = 'block';
+	}
 
 	progress.style.width = '0%';
 	progress.textContent = '0%';
@@ -110,16 +141,15 @@ function handleFileSelect(evt) {
 	reader.onerror = errorHandler;
 	reader.onprogress = updateProgress;
 	reader.onabort = function(e) {
-		alert('File read cancelled');
+		alert('File upload cancelled');
 	};
-	reader.onloadstart = function(e) {
-		document.getElementById('progress_bar').className = 'loading';
-	};
+	// reader.onloadstart = function(e) {
+	// 	document.getElementById('progress_bar').className = 'loading';
+	// };
 	reader.onload = function(e) {
 		// Ensure that the progress bar displays 100% at the end.
 		progress.style.width = '100%';
 		progress.textContent = '100%';
-		setTimeout("document.getElementById('progress_bar').className='';", 2000);
 	}
 
 // Read in the image file as a binary string.
@@ -140,7 +170,15 @@ document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 // Drop file
 function handleFileDropped(evt) {
 	document.getElementById("files").disabled = true;
-	document.getElementById("drop_zone").style.display = "none";
+	uploadhint = document.getElementsByClassName("upload_hint");
+	for (var i = 0; i < uploadhint.length; i++) {
+		uploadhint[i].style.display = 'none';
+	}
+
+	uploadshow = document.getElementsByClassName("upload_show");
+	for (var i = 0; i < uploadshow.length; i++) {
+		uploadshow[i].style.display = 'block';
+	}
 
 	evt.stopPropagation();
 	evt.preventDefault();
@@ -158,15 +196,14 @@ function handleFileDropped(evt) {
 		alert('File read cancelled');
 	};
 
-	reader.onloadstart = function(e) {
-		document.getElementById('progress_bar').className = 'loading';
-	};
+	// reader.onloadstart = function(e) {
+	// 	document.getElementById('progress_bar').className = 'loading';
+	// };
 	
 	reader.onload = function(e) {
 		// Ensure that the progress bar displays 100% at the end.
 		progress.style.width = '100%';
 		progress.textContent = '100%';
-		setTimeout("document.getElementById('progress_bar').className='';", 2000);
 	}
 
 	// Read in the image file as a binary string.
@@ -188,10 +225,3 @@ function handleDragOver(evt) {
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
-
-// Setup the dnd listeners.
-var dropZone = document.getElementById('drop_zone');
-dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('drop', handleFileDropped, false);
-
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
