@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+ #coding=utf-8 
 import argparse
 import audioop
 from googleapiclient.discovery import build
@@ -11,8 +12,16 @@ import subprocess
 import sys
 import tempfile
 import wave
+import base64
+
+# Import Google Speech API
+from googleapiclient import discovery
+import httplib2
+from oauth2client.client import GoogleCredentials
 
 from progressbar import ProgressBar, Percentage, Bar, ETA
+
+import sys
 import json
 
 import pysrt
@@ -207,7 +216,7 @@ class FLACConverter(object):
 
 
 class SpeechRecognizer(object):
-    def __init__(self, language="en", rate=44100, retries=3, api_key=GOOGLE_SPEECH_API_KEY):
+    def __init__(self, language="en-IN", rate=44100, retries=3, api_key=GOOGLE_SPEECH_API_KEY):
         self.language = language
         self.rate = rate
         self.api_key = api_key
@@ -216,22 +225,50 @@ class SpeechRecognizer(object):
     def __call__(self, data):
         try:
             for i in range(self.retries):
-                url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
-                headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
 
-                try:
-                    resp = requests.post(url, data=data, headers=headers)
-                except requests.exceptions.ConnectionError:
-                    continue
+                speech_content = base64.b64encode(data)
+                service = get_speech_service()
+                service_request = service.speech().syncrecognize(
+                    body={
+                        'config': {
+                            # There are a bunch of config options you can specify. See
+                            # https://goo.gl/KPZn97 for the full list.
+                            'encoding': 'FLAC',  # FLAC
+                            'sampleRate': self.rate,  # default rate for the audio file
+                            'languageCode': self.language,  # a BCP-47 language tag
+                        },
+                        'audio': {
+                            'content': speech_content.decode('UTF-8')
+                            }
+                        })
+                # [END construct_request]
+                # [START send_request]
+                response = service_request.execute()
+                print response
+                line = " "
+                if response.has_key('results'):
+                    for sentences in response['results']:
+                        transcript = sentences['alternatives'][0]
+                        line = line + transcript['transcript']
 
-                for line in resp.content.split("\n"):
-                    try:
-                        line = json.loads(line)
-                        line = line['result'][0]['alternative'][0]['transcript']
-                        return line[:1].upper() + line[1:]
-                    except:
-                        # no result
-                        continue
+                # [END send_request]
+                return line[:1].upper() + line[1:]
+                # url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
+                # headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
+
+                # try:
+                #     resp = requests.post(url, data=data, headers=headers)
+                # except requests.exceptions.ConnectionError:
+                #     continue
+
+                # for line in resp.content.split("\n"):
+                #     try:
+                #         line = json.loads(line)
+                #         line = line['result'][0]['alternative'][0]['transcript']
+                #         return line[:1].upper() + line[1:]
+                #     except:
+                #         # no result
+                #         continue
 
         except KeyboardInterrupt:
             return
@@ -291,164 +328,3 @@ def extract_audio(filename, channels=1, rate=16000):
     command = ["ffmpeg", "-y", "-i", filename, "-ac", str(channels), "-ar", str(rate), "-loglevel", "error", temp.name]
     subprocess.check_output(command)
     return temp.name, rate
-
-
-def find_speech_regions(filename, frame_width=4096, min_region_size=0.5, max_region_size=6):
-    reader = wave.open(filename)
-    sample_width = reader.getsampwidth()
-    rate = reader.getframerate()
-    n_channels = reader.getnchannels()
-
-    total_duration = reader.getnframes() / rate
-    chunk_duration = float(frame_width) / rate
-
-    n_chunks = int(total_duration / chunk_duration)
-    energies = []
-
-    for i in range(n_chunks):
-        chunk = reader.readframes(frame_width)
-        energies.append(audioop.rms(chunk, sample_width * n_channels))
-
-    threshold = percentile(energies, 0.2)
-
-    elapsed_time = 0
-
-    regions = []
-    region_start = None
-
-    for energy in energies:
-        is_silence = energy <= threshold
-        max_exceeded = region_start and elapsed_time - region_start >= max_region_size
-
-        if (max_exceeded or is_silence) and region_start:
-            if elapsed_time - region_start >= min_region_size:
-                regions.append((region_start, elapsed_time))
-                region_start = None
-
-        elif (not region_start) and (not is_silence):
-            region_start = elapsed_time
-        elapsed_time += chunk_duration
-    return regions
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('source_path', help="Path to the video or audio file to subtitle", nargs='?')
-    parser.add_argument('-C', '--concurrency', help="Number of concurrent API requests to make", type=int, default=10)
-    parser.add_argument('-o', '--output',
-                        help="Output path for subtitles (by default, subtitles are saved in \
-                        the same directory and name as the source path)")
-    parser.add_argument('-F', '--format', help="Destination subtitle format", default="srt")
-    parser.add_argument('-S', '--src-language', help="Language spoken in source file", default="en")
-    parser.add_argument('-D', '--dst-language', help="Desired language for the subtitles", default="en")
-    parser.add_argument('-K', '--api-key',
-                        help="The Google Translate API key to be used. (Required for subtitle translation)")
-    parser.add_argument('--list-formats', help="List all available subtitle formats", action='store_true')
-    parser.add_argument('--list-languages', help="List all available source/destination languages", action='store_true')
-
-    args = parser.parse_args()
-
-    if args.list_formats:
-        print("List of formats:")
-        for subtitle_format in FORMATTERS.keys():
-            print("{format}".format(format=subtitle_format))
-        return 0
-
-    if args.list_languages:
-        print("List of all languages:")
-        for code, language in sorted(LANGUAGE_CODES.items()):
-            print("{code}\t{language}".format(code=code, language=language))
-        return 0
-
-    if args.format not in FORMATTERS.keys():
-        print("Subtitle format not supported. Run with --list-formats to see all supported formats.")
-        return 1
-
-    if args.src_language not in LANGUAGE_CODES.keys():
-        print("Source language not supported. Run with --list-languages to see all supported languages.")
-        return 1
-
-    if args.dst_language not in LANGUAGE_CODES.keys():
-        print(
-            "Destination language not supported. Run with --list-languages to see all supported languages.")
-        return 1
-
-    if not args.source_path:
-        print("Error: You need to specify a source path.")
-        return 1
-
-    audio_filename, audio_rate = extract_audio(args.source_path)
-
-    regions = find_speech_regions(audio_filename)
-
-    pool = multiprocessing.Pool(args.concurrency)
-    converter = FLACConverter(source_path=audio_filename)
-    recognizer = SpeechRecognizer(language=args.src_language, rate=audio_rate, api_key=GOOGLE_SPEECH_API_KEY)
-
-    transcripts = []
-    if regions:
-        try:
-            widgets = ["Converting speech regions to FLAC files: ", Percentage(), ' ', Bar(), ' ', ETA()]
-            pbar = ProgressBar(widgets=widgets, maxval=len(regions)).start()
-            extracted_regions = []
-            for i, extracted_region in enumerate(pool.imap(converter, regions)):
-                extracted_regions.append(extracted_region)
-                pbar.update(i)
-            pbar.finish()
-
-            widgets = ["Performing speech recognition: ", Percentage(), ' ', Bar(), ' ', ETA()]
-            pbar = ProgressBar(widgets=widgets, maxval=len(regions)).start()
-
-            for i, transcript in enumerate(pool.imap(recognizer, extracted_regions)):
-                transcripts.append(transcript)
-                pbar.update(i)
-            pbar.finish()
-
-            if not is_same_language(args.src_language, args.dst_language):
-                if args.api_key:
-                    google_translate_api_key = args.api_key
-                    translator = Translator(args.dst_language, google_translate_api_key, dst=args.dst_language,
-                                            src=args.src_language)
-                    prompt = "Translating from {0} to {1}: ".format(args.src_language, args.dst_language)
-                    widgets = [prompt, Percentage(), ' ', Bar(), ' ', ETA()]
-                    pbar = ProgressBar(widgets=widgets, maxval=len(regions)).start()
-                    translated_transcripts = []
-                    for i, transcript in enumerate(pool.imap(translator, transcripts)):
-                        translated_transcripts.append(transcript)
-                        pbar.update(i)
-                    pbar.finish()
-                    transcripts = translated_transcripts
-                else:
-                    print "Error: Subtitle translation requires specified Google Translate API key. \
-                    See --help for further information."
-                    return 1
-
-        except KeyboardInterrupt:
-            pbar.finish()
-            pool.terminate()
-            pool.join()
-            print "Cancelling transcription"
-            return 1
-
-    timed_subtitles = [(r, t) for r, t in zip(regions, transcripts) if t]
-    formatter = FORMATTERS.get(args.format)
-    formatted_subtitles = formatter(timed_subtitles)
-
-    dest = args.output
-
-    if not dest:
-        base, ext = os.path.splitext(args.source_path)
-        dest = "{base}.{format}".format(base=base, format=args.format)
-
-    with open(dest, 'wb') as f:
-        f.write(formatted_subtitles.encode("utf-8"))
-
-    print "Subtitles file created at {}".format(dest)
-
-    os.remove(audio_filename)
-
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main())
