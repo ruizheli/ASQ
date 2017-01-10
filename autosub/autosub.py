@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+ #coding=utf-8 
 import argparse
 import audioop
 from googleapiclient.discovery import build
@@ -20,7 +21,6 @@ from oauth2client.client import GoogleCredentials
 
 from progressbar import ProgressBar, Percentage, Bar, ETA
 
-# -*- coding: utf-8 -*-
 import sys
 import json
 
@@ -78,6 +78,7 @@ FORMATTERS = {
 }
 
 GOOGLE_SPEECH_API_KEY = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+# GOOGLE_SPEECH_API_KEY = "AIzaSyBdrYmI_ZiZ7dey_ymBd-BlLZkw4IvoLZ0"
 GOOGLE_SPEECH_API_URL = "http://www.google.com/speech-api/v2/recognize?client=chromium&lang={lang}&key={key}"
 
 LANGUAGE_CODES = {
@@ -225,43 +226,49 @@ class SpeechRecognizer(object):
         try:
             for i in range(self.retries):
 
-                # speech_content = base64.b64encode(data)
-                # service = get_speech_service()
-                # service_request = service.speech().syncrecognize(
-                #     body={
-                #         'config': {
-                #             'encoding': 'FLAC',  # FLAC
-                #             'sampleRate': self.rate,  # default rate for the audio file
-                #             'languageCode': self.language,  # a BCP-47 language tag
-                #         },
-                #         'audio': {
-                #             'content': speech_content.decode('UTF-8')
-                #             }
-                #         })
-                # # [END construct_request]
-                # # [START send_request]
-                # response = service_request.execute()
-                # line = ""
-                # for sentences in response['results']:
-                #     transcript = sentences['alternatives'][0]
-                #     line = line + transcript['transcript']
+                speech_content = base64.b64encode(data)
+                service = get_speech_service()
+                service_request = service.speech().syncrecognize(
+                    body={
+                        'config': {
+                            # There are a bunch of config options you can specify. See
+                            # https://goo.gl/KPZn97 for the full list.
+                            'encoding': 'FLAC',  # FLAC
+                            'sampleRate': self.rate,  # default rate for the audio file
+                            'languageCode': self.language,  # a BCP-47 language tag
+                        },
+                        'audio': {
+                            'content': speech_content.decode('UTF-8')
+                            }
+                        })
+                # [END construct_request]
+                # [START send_request]
+                response = service_request.execute()
+                print response
+                line = " "
+                if response.has_key('results'):
+                    for sentences in response['results']:
+                        transcript = sentences['alternatives'][0]
+                        line = line + transcript['transcript']
+
                 # [END send_request]
-                url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
-                headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
+                return line[:1].upper() + line[1:]
+                # url = GOOGLE_SPEECH_API_URL.format(lang=self.language, key=self.api_key)
+                # headers = {"Content-Type": "audio/x-flac; rate=%d" % self.rate}
 
-                try:
-                    resp = requests.post(url, data=data, headers=headers)
-                except requests.exceptions.ConnectionError:
-                    continue
+                # try:
+                #     resp = requests.post(url, data=data, headers=headers)
+                # except requests.exceptions.ConnectionError:
+                #     continue
 
-                for line in resp.content.split("\n"):
-                    try:
-                        line = json.loads(line)
-                        line = line['result'][0]['alternative'][0]['transcript']
-                        return line[:1].upper() + line[1:]
-                    except:
-                        # no result
-                        continue
+                # for line in resp.content.split("\n"):
+                #     try:
+                #         line = json.loads(line)
+                #         line = line['result'][0]['alternative'][0]['transcript']
+                #         return line[:1].upper() + line[1:]
+                #     except:
+                #         # no result
+                #         continue
 
         except KeyboardInterrupt:
             return
@@ -323,7 +330,7 @@ def extract_audio(filename, channels=1, rate=16000):
     return temp.name, rate
 
 
-def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_region_size=6):
+def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_region_size=5):
     reader = wave.open(filename)
     sample_width = reader.getsampwidth()
     rate = reader.getframerate()
@@ -344,22 +351,48 @@ def find_speech_regions(filename, frame_width=4096, min_region_size=3, max_regio
     elapsed_time = 0
 
     regions = []
-    region_start = None
+    region_start = 0.0001
 
+    # for energy in energies:
+    #     is_silence = energy <= threshold
+    #     max_exceeded = region_start and elapsed_time - region_start >= max_region_size
+    #     if (max_exceeded or is_silence) and region_start:
+    #         if elapsed_time - region_start >= min_region_size:
+    #             regions.append((region_start, elapsed_time))
+    #         	region_start = None
+
+    #     elif (not region_start) and (not is_silence):
+    #         region_start = elapsed_time
+    #     elapsed_time += chunk_duration
+
+    # for energy in energies:
+    #     is_silence = energy <= threshold
+    #     max_exceeded = region_start and elapsed_time - region_start >= max_region_size
+    #     if (max_exceeded or is_silence) and region_start:
+    #         if elapsed_time - region_start >= min_region_size:
+    #             regions.append((region_start, elapsed_time))
+    #         	region_start = None
+
+    #     elif (not region_start) and (not is_silence):
+    #         region_start = elapsed_time
+    #     elapsed_time += chunk_duration
+
+    # Canceled min
     for energy in energies:
         is_silence = energy <= threshold
         max_exceeded = region_start and elapsed_time - region_start >= max_region_size
 
-	if (max_exceeded or is_silence) and region_start:
-            if elapsed_time - region_start >= min_region_size:
+        if is_silence and region_start:
+            if max_exceeded:
                 regions.append((region_start, elapsed_time))
-            	region_start = None
+                region_start = None
 
         elif (not region_start) and (not is_silence):
             region_start = elapsed_time
-        
-	elapsed_time += chunk_duration
-
+        elapsed_time += chunk_duration
+    if region_start:
+        regions.append((region_start, elapsed_time))
+    print regions
     return regions
 
 
@@ -367,7 +400,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('source_path', help="Path to the video or audio file to subtitle", nargs='?')
     parser.add_argument('-C', '--concurrency', help="Number of concurrent API requests to make", type=int, default=10)
-    parser.add_argument('-o', '--output',
+    parser.add_argument('-O', '--output',
                         help="Output path for subtitles (by default, subtitles are saved in \
                         the same directory and name as the source path)")
     parser.add_argument('-F', '--format', help="Destination subtitle format", default="srt")
@@ -376,6 +409,7 @@ def main():
     parser.add_argument('-K', '--api-key',
                         help="The Google Translate API key to be used. (Required for subtitle translation)")
     parser.add_argument('-V', '--video', help="Input a video file to transcribe")
+    parser.add_argument('-R', '--regions', help="Define regions to be transcribed" )
     parser.add_argument('--list-formats', help="List all available subtitle formats", action='store_true')
     parser.add_argument('--list-languages', help="List all available source/destination languages", action='store_true')
 
@@ -424,8 +458,9 @@ def main():
         output_path = args.source_path
 
     audio_filename, audio_rate = extract_audio(source_path)
-
-    regions = find_speech_regions(audio_filename)
+    if args.regions:
+        regions = args.regions
+    else: regions = find_speech_regions(audio_filename)
 
     pool = multiprocessing.Pool(args.concurrency)
     converter = FLACConverter(source_path=audio_filename)
@@ -494,10 +529,6 @@ def main():
         f.write(formatted_subtitles.encode("utf-8"))
 
     print "Subtitles file created at {}".format(dest)
-
-
-
-
 
     os.remove(audio_filename)
 
