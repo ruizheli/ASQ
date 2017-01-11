@@ -13,7 +13,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8">
-					<h1>Answer Students Questions</h1>
+					<h1><a href="/home" class="logo">Answer Students Questions</a></h1>
 				</div>
 				<div class="col-md-4">
 					<div class="searchBox">
@@ -33,6 +33,9 @@
 		<br>
 		<h2>Upload Failed</h2>
 		<br>
+		<p>Unfortunately, your upload did not go through. Please try again :)</p>
+		<p>You will be redirected to home page in a few seconds.</p>
+		<br><br><br>
 	</div>
 	
 	<br>
@@ -46,6 +49,17 @@
 		</footer>
 	</div>
 
+	<script type="text/javascript">
+		$(function(){
+
+			window.setTimeout(redirect, 4000 );
+
+			function redirect(){
+		    	$(location).attr('href', '/home');
+			};
+
+		});
+	</script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 
