@@ -24,8 +24,14 @@ header {
 	background-color: #99979c;
 }
 
-.hidden {
-	display: none;
+#upload_section {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#upload_section .container {
+	width: 100%; /* overridding bootstrap's settings */
 }
 
 #progress_bar {
@@ -51,15 +57,6 @@ header {
 }
 
 #drop_zone {
-	/*margin: 10px 0;
-	padding: 0px;
-	border: 1px solid #99ccff;
-	font-size: 14px;
-	clear: both;
-	opacity: 1.0;
-	-moz-transition: opacity 1s linear;
-	-o-transition: opacity 1s linear;
-	-webkit-transition: opacity 1s linear;*/
 	color: #ccc;
   	border-style: dashed;
   	border-color: #ccc;

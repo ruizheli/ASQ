@@ -1,20 +1,17 @@
-$(".logo").on("click", function(){
-	$(location).attr('href', 'home');
-})
-
 var tags;
 
 //Validate Form
 function validateForm() {
-    var author = document.forms["upload_form"]["author"].value;
-    var title = document.forms["upload_form"]["title"].value;
-    var category = document.forms["upload_form"]["category"].value;
-    var tags = document.forms["upload_form"]["tags"].value;
+    var author = document.forms["upload_form"]["author"].value.trim();
+    var title = document.forms["upload_form"]["title"].value.trim();
+    var category = document.forms["upload_form"]["category"].value.trim();
+    var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
 
     if (author == "" || title == "" || category == "" || tags == "") {
         alert("All fields marked with * are required");
         return false;
     }
+    return true;
 }
 
 
@@ -22,18 +19,19 @@ function validateForm() {
 document.addEventListener("DOMContentLoaded", function() {
 	var textarea = document.getElementById("tags");
 	var tagOut = document.getElementById("tags-output");
-	var hidden = document.getElementsByName("tags")[0];
+	var hidden = document.getElementsByName("tags-hidden")[0];
 
 	textarea.addEventListener("keyup", function() {
 
 		function makeTagDiv(tag) {
 			var div = document.createElement("div");
-			div.innerHTML = tag;
+			div.innerHTML = "&#10005;&emsp;" + tag;
 			
 			div.style.border = "1px solid silver";
 			div.style.borderRadius = "3px";
 			div.style.display = "inline-block";
-			div.style.padding = ".25em 1em .25em 1em";
+			div.style.padding = "0em 0.5em 0em 0.5em";
+			div.style.fontSize = ".8em";
 
 			div.addEventListener("click", function() {
 				div.parentNode.removeChild(div);
@@ -42,8 +40,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 			return div;
 		}
-
-		//console.log( textarea.value );
 
 		while(true) {
 			var match = /(\w+)(,|\s+)/.exec(textarea.value);
@@ -82,28 +78,47 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 
 
 //Progress Bar
-var reader;
+var reader = null;
 var progress = document.querySelector('.percent');
 
 function abortRead() {
-	reader.abort();
-	document.getElementById("files").disabled = false;
+	//console.log( "reader = " + reader ); 
+	if( reader != null ) {
+		reader.abort();
+		
+		// TODO (only a simpke fix; handler put here)
+		reader.onabort(); // call handler explicitly
+		uploadhint = document.getElementsByClassName("upload_hint");
+		for (var i = 0; i < uploadhint.length; i++) {
+			uploadhint[i].style.display = 'block';
+		}
+
+		uploadshow = document.getElementsByClassName("upload_show");
+		for (var i = 0; i < uploadshow.length; i++) {
+			uploadshow[i].style.display = 'none';
+		}
+
+		document.getElementById("browse_button").style.display = "table";
+
+		document.getElementById("files").disabled = false;
+	}
 }
 
 function errorHandler(evt) {
+	//console.log("errorHandler(" + evt + ")");
 	switch(evt.target.error.code) {
 		case evt.target.error.NOT_FOUND_ERR:
-		alert('File Not Found!');
-		break;
+			alert('File Not Found!');
+			break;
 		case evt.target.error.NOT_READABLE_ERR:
-		alert('File is not readable');
-		break;
+			alert('File is not readable');
+			break;
 		case evt.target.error.ABORT_ERR:
 			break; // noop
-			default:
+		default:
 			alert('An error occurred reading this file.');
-		};
 	}
+}
 
 // Progress bar update
 function updateProgress(evt) {
@@ -141,7 +156,7 @@ function handleFileSelect(evt) {
 	reader.onerror = errorHandler;
 	reader.onprogress = updateProgress;
 	reader.onabort = function(e) {
-		alert('File upload cancelled');
+		//alert('File upload cancelled');
 	};
 	// reader.onloadstart = function(e) {
 	// 	document.getElementById('progress_bar').className = 'loading';
@@ -150,7 +165,7 @@ function handleFileSelect(evt) {
 		// Ensure that the progress bar displays 100% at the end.
 		progress.style.width = '100%';
 		progress.textContent = '100%';
-	}
+	};
 
 // Read in the image file as a binary string.
 reader.readAsBinaryString(evt.target.files[0]);
@@ -193,7 +208,7 @@ function handleFileDropped(evt) {
 	reader.onprogress = updateProgress;
 
 	reader.onabort = function(e) {
-		alert('File read cancelled');
+		//alert('File read cancelled');
 	};
 
 	// reader.onloadstart = function(e) {
