@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Upload Recording</title>
-	<link rel="stylesheet" type="text/css" href="/static/content/upload.css">
+	<title>RECORDING TITLE</title>
+	<link rel="stylesheet" type="text/css" href="/static/content/player.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -29,10 +29,47 @@
 		</div>
 	</header>
 	
+	<br>
 	<div class="container">
+		<h2>Basic Chemistry</h2>
 		<br>
-		<h2>Upload Successed</h2>
-		<br>
+		<div class="row">
+			<div class="col-md-3" id="left">
+				<div class="concept">
+					<h4>Concepts</h4>
+					<ul>
+						<li class="jump"><a href="#" onclick="jumpToTime(15)">Concept #1</a></li>
+						<li class="jump"><a href="#" onclick="jumpToTime(25)">Concept #2</a></li>
+						<li class="jump"><a href="#" onclick="jumpToTime(35)">Concept #3</a></li>
+						<li class="jump"><a href="#" onclick="jumpToTime(45)">Concept #4</a></li>
+						<li class="jump"><a href="#" onclick="jumpToTime(55)">Concept #5</a></li>
+						<li class="jump"><a href="#" onclick="jumpToTime(75)">Concept #6</a></li>
+					</ul>
+				</div>
+				<br>
+				<div class="info">
+					<p><strong>Author: </strong>John Green</p>
+					<p><strong>Course: </strong>CHEM 101</p>
+					<p><strong>School: </strong>University of Maryland</p>
+					<p><strong>Category: </strong>Chemistry - Organic</p>
+				</div>
+			</div>
+			<div class="col-md-9" id="right">
+				<div class="video-container">
+					<video width="100%" id="video" controls>
+						<source src="/static/content/test-vid.mp4" type="video/mp4">
+						Your browser is currently not compatible, please use the newest version of Google Chrome.
+					</video> 
+				</div>
+				<br>
+
+				<div class="description">
+					<p><strong>Description:</strong> <br>
+					An overview of the Periodic Table, inorganic substances, ionic and covalent bonding, bulk properties of materials, chemical equilibrium, and quantitative chemistry. CHEM131 is the first course in a four-semester sequence for students majoring in the sciences, other than Chemistry and Biochemistry majors.</p>
+				</div>
+				<br><br>
+			</div>
+		</div>
 	</div>
 	
 	<br>
@@ -46,6 +83,7 @@
 		</footer>
 	</div>
 
+	<script src="/static/scripts/player.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 

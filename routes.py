@@ -24,6 +24,24 @@ def upload():
         year=datetime.now().year
     )
 
+@route('/search')
+@view('search')
+def search():
+    """Renders the info page."""
+    return dict(
+        title='Search Result',
+        year=datetime.now().year
+    )
+
+@route('/player')
+@view('player')
+def player():
+    """Renders the info page."""
+    return dict(
+        title='Player',
+        year=datetime.now().year
+    )
+
 @route('/upload/upload_success')
 @view('upload_success')
 def upload_success():
