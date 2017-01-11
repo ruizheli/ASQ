@@ -99,8 +99,6 @@ function abortRead() {
 		}
 
 		document.getElementById("browse_button").style.display = "table";
-
-		document.getElementById("files").disabled = false;
 	}
 }
 
@@ -137,8 +135,6 @@ if (evt.lengthComputable) {
 
 // Select file
 function handleFileSelect(evt) {
-	document.getElementById("files").disabled = true;
-
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
 		uploadhint[i].style.display = 'none';
@@ -184,7 +180,6 @@ document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 
 // Drop file
 function handleFileDropped(evt) {
-	document.getElementById("files").disabled = true;
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
 		uploadhint[i].style.display = 'none';

@@ -39,7 +39,7 @@
 		<br>
 
 		<div class="container">
-			<form action="/upload/upload_data" method="POST" name="upload_form" onsubmit="return validateForm();">
+			<form action="/upload/upload_data" method="POST" name="upload_form" enctype="multipart/form-data" onsubmit="return validateForm();">
 				<h4 class="upload_hint">Select files from your computer</h4>
 				<label class="btn btn-default btn-file upload_hint" id="browse_button" style="display: table;">
 				    Browse File
