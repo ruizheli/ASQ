@@ -17,6 +17,8 @@ def upload_data():
 	category = request.forms.get('category')
 	file = request.files.get('file')
 
+	print(request.files)
+	print(file)
 	print('Encoding as base64')
 	file_content = base64.b64encode(file.file.read())
 	print('Encoding finished')
