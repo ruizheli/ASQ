@@ -122,7 +122,7 @@ if (evt.lengthComputable) {
 
 // Select file
 function handleFileSelect(evt) {
-	document.getElementById("files").disabled = true;
+	// document.getElementById("files").disabled = true;
 
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
@@ -152,24 +152,24 @@ function handleFileSelect(evt) {
 		progress.textContent = '100%';
 	}
 
-// Read in the image file as a binary string.
-reader.readAsBinaryString(evt.target.files[0]);
+	// Read in the image file as a binary string.
+	reader.readAsBinaryString(evt.target.files[0]);
 
-var output = [];
-for (var i = 0, f; f = evt.target.files[i]; i++) {
-	output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-		f.size, ' bytes, last modified: ',
-		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-		'</li>');
-}
-document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+	var output = [];
+	for (var i = 0, f; f = evt.target.files[i]; i++) {
+		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+			f.size, ' bytes, last modified: ',
+			f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+			'</li>');
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
 
 
 // Drop file
 function handleFileDropped(evt) {
-	document.getElementById("files").disabled = true;
+	// document.getElementById("files").disabled = true;
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
 		uploadhint[i].style.display = 'none';
@@ -207,7 +207,7 @@ function handleFileDropped(evt) {
 	}
 
 	// Read in the image file as a binary string.
-	reader.readAsBinaryString(files[0]);
+	reader.readAsBinaryString( [0]);
 
 	// files is a FileList of File objects. List some properties.
 	var output = [];

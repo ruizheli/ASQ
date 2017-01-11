@@ -39,12 +39,11 @@
 		<br>
 
 		<div class="container">
-			<form action="/upload/upload_data" method="POST" name="upload_form" onsubmit="return validateForm()">
+			<form action="/upload/upload_data" method="POST" name="upload_form" enctype="multipart/form-data">
 				<h4 class="upload_hint">Select files from your computer</h4>
 				<label class="btn btn-default btn-file upload_hint">
 				    Browse File
 				    <input type="file" id="files" name="file" style="display: none;">
-
 				</label>
 
 				<h4 class="upload_hint"><br>Or drag and drop files below</h4>
