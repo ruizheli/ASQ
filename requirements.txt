@@ -10,7 +10,7 @@ azure-mgmt-storage==0.20.0
 azure-nspkg==1.0.0
 azure-servicebus==0.20.1
 azure-servicemanagement-legacy==0.20.2
-azure-storage==0.20.3
+azure-storage==0.30.0
 bottle==0.12.11
 futures==3.0.5
 python-dateutil==2.6.0
