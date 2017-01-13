@@ -12,12 +12,16 @@ from pprint import pprint
 
 @route('/upload/upload_data', method='POST')
 def upload_data():
+	print('request received')
 	title = request.forms.get('title')
 	author = request.forms.get('author')
 	tags = request.forms.get('tags')
 	description = request.forms.get('description')
 	category = request.forms.get('category')
+	print('getting file')
 	file = request.files.get('file')
+	# File received. Direct to success
+	# redirect('/upload/upload_success')
 	print('encoding')
 	file_content = base64.b64encode(file.file.read())
 	print('encoding finished')
@@ -31,10 +35,10 @@ def upload_data():
 	driver= '{ODBC Driver 13 for SQL Server}'
 
 	# pyodbc part, for deploying only
-	# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+	conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 	
 	# pymssql part, for testing only
-	conn = pymssql.connect(server='asq-bottle.database.windows.net',user='ruizheli@asq-bottle.database.windows.net', password='Fzj990418.', database='asq-bottle')
+	# conn = pymssql.connect(server='asq-bottle.database.windows.net',user='ruizheli@asq-bottle.database.windows.net', password='Fzj990418.', database='asq-bottle')
 
 	# logics for uploading
 	cursor = conn.cursor()
@@ -52,8 +56,8 @@ def upload_data():
 
 	append_blob_service.create_blob('media-file', media_file_name)
 	print('total number of partitions: %s' % (str(len(splitted_file))))
-	percentage_step = 100 / len(splitted_file)
-	precent = 0
+	percentage_step = 100.0 / len(splitted_file)
+	precent = 0.0
 	for file_block in splitted_file: 
 		append_blob_service.append_blob_from_text(
 			'media-file',
@@ -63,27 +67,4 @@ def upload_data():
 		precent += percentage_step
 		print(str(precent) + "%")
 
-	print('100%')
-
-	redirect('/upload/upload_success')
-
-	# # MongoDB Testing (GridFs issue not solved, file size max 16MB, may have to write our own GridFs for it)
-	# uri = "mongodb://asq-bottle:UTH80Mqd47BP7RiEK11YKAGNtjvP8qXIqZQy8av7rDLUjE67u6Bn4rwykl9Z64PSD1N5qv74cLvrVf7Thg7Gog==@asq-bottle.documents.azure.com:10250/?ssl=true&ssl_cert_reqs=CERT_NONE"
-	# client = pymongo.MongoClient(uri)
-	# db = client['asq-bottle']
-	# asq_file_data = db['asq_file_data']
-
-	# post = {"title"			:	title,
-	# 		"author"		: 	author,
-	# 		"date"			: 	datetime.datetime.utcnow(),
-	#         "tags"			: 	tags,
-	#         "description"	: 	description,
-	#         "subject"		:	category,
-	#         "format"		:	"video",
-	#         "file"			:	file_content,
-	#         "transcript_timed"	: "transcript_timed",
-	#         "key_time_map"	:	"key_time_map"}
-
-	# post_id = asq_file_data.insert_one(post).inserted_id
-	# print(post_id)
-	# # MongoDB Testing end ===============================
+	return("upload_success")

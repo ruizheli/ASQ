@@ -54,7 +54,57 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
+function fileSelected() {
+  	var file = document.getElementById('files').files[0];
+  		if (file) {
+    	var fileSize = 0;
+    	if (file.size > 1024 * 1024)
+      		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+    	else
+      	fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+          
+    	document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
+    	document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
+    	document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
+  	}
+}
 
+function uploadFile() {
+  	var xhr = new XMLHttpRequest();
+  	var fd = new FormData(document.getElementById('upload_form'));
+
+  	/* event listners */
+  	xhr.upload.addEventListener("progress", uploadProgress, false);
+  	xhr.addEventListener("load", uploadComplete, false);
+  	xhr.addEventListener("error", uploadFailed, false);
+  	xhr.addEventListener("abort", uploadCanceled, false);
+  	/* Be sure to change the url below to the url of your upload server side script */
+  	xhr.open("POST", "/upload/upload_data");
+  	xhr.send(fd);
+}
+
+function uploadProgress(evt) {
+  	if (evt.lengthComputable) {
+    	var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+    	document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+  	}
+  	else {
+    	document.getElementById('progressNumber').innerHTML = 'unable to compute';
+  	}
+}
+
+function uploadComplete(evt) {
+  	/* This event is raised when the server send back a response */
+  	window.location = window.location.href + "/" + evt.target.responseText;
+}
+
+function uploadFailed(evt) {
+  	alert("There was an error attempting to upload the file.");
+}
+
+function uploadCanceled(evt) {
+  	alert("The upload has been canceled by the user or the browser dropped the connection.");
+} 
 
 //Prevent Drag Over
 window.addEventListener("dragover",function(e){
@@ -67,8 +117,6 @@ window.addEventListener("drop",function(e){
 	e = e || event;
 	e.preventDefault();
 },false);
-
-
 
 // Setup the dnd listeners.
 var dropZone = document.getElementById('drop_zone');
@@ -132,7 +180,6 @@ if (evt.lengthComputable) {
 }
 
 
-
 // Select file
 function handleFileSelect(evt) {
 	uploadhint = document.getElementsByClassName("upload_hint");
@@ -163,17 +210,17 @@ function handleFileSelect(evt) {
 		progress.textContent = '100%';
 	};
 
-// Read in the image file as a binary string.
-reader.readAsBinaryString(evt.target.files[0]);
+	// Read in the image file as a binary string.
+	reader.readAsBinaryString(evt.target.files[0]);
 
-var output = [];
-for (var i = 0, f; f = evt.target.files[i]; i++) {
-	output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-		f.size, ' bytes, last modified: ',
-		f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-		'</li>');
-}
-document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+	var output = [];
+	for (var i = 0, f; f = evt.target.files[i]; i++) {
+		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+			f.size, ' bytes, last modified: ',
+			f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+			'</li>');
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
 

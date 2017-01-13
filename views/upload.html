@@ -39,13 +39,16 @@
 		<br>
 
 		<div class="container">
-			<form action="/upload/upload_data" method="POST" name="upload_form" enctype="multipart/form-data" onsubmit="return validateForm();">
+			<form action="/upload/upload_data" method="POST" name="upload_form" id="upload_form" enctype="multipart/form-data"> <!-- onsubmit="return validateForm();"> -->
 				<h4 class="upload_hint">Select files from your computer</h4>
 				<label class="btn btn-default btn-file upload_hint" id="browse_button" style="display: table;">
 				    Browse File
-				    <input type="file" id="files" name="file" style="display: none;">
-
+				    <input type="file" id="files" name="file" onchange="fileSelected();" style="display: none;">
 				</label>
+				<div id="fileName"></div>
+    			<div id="fileSize"></div>
+    			<div id="fileType"></div>
+    			<div id="progressNumber"></div>
 
 				<h4 class="upload_hint"><br>Or drag and drop files below</h4>
 				<div id="drop_zone" class="upload_hint">
@@ -89,7 +92,7 @@
 					</div>
 				</div>
 				<br>
-				<input type="submit" class="btn btn-default" id="submit_button" value="Upload">
+				<input type="button" class="btn btn-default" id="submit_button" onclick="uploadFile();" value="Upload">
 				<br><br>
 
 			</form>
