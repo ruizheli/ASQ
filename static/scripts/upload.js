@@ -1,4 +1,14 @@
 var tags;
+var averageSpeed = 0;
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
 
 //Validate Form
 function validateForm() {
@@ -54,6 +64,46 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
+function checkUploadSpeed( iterations, update ) {
+    var index = 0,
+        timer = window.setInterval( check, 500 ); //check every 5 seconds
+    check();
+
+    function check() {
+        var xhr = new XMLHttpRequest(),
+            url = '?cache=' + Math.floor( Math.random() * 10000 ), //random number prevents url caching
+            data = getRandomString( 1 ), //1 meg POST size handled by all servers
+            startTime,
+            speed = 0;
+        xhr.onreadystatechange = function ( event ) {
+            if( xhr.readyState == 4 ) {
+                speed = Math.round( 1024 / ( ( new Date() - startTime ) / 1000 ) );
+                averageSpeed == 0 
+                    ? averageSpeed = speed 
+                    : averageSpeed = Math.round( ( averageSpeed + speed ) / 2 );
+                update( speed, averageSpeed );
+                index++;
+                if( index == iterations ) {
+                    window.clearInterval( timer );
+                };
+            };
+        };
+        xhr.open( 'POST', url, true );
+        startTime = new Date();
+        xhr.send( data );
+    };
+
+    function getRandomString( sizeInMb ) {
+        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]\{}|;':,./<>?", //random data prevents gzip effect
+            iterations = sizeInMb * 1024 * 1024, //get byte count
+            result = '';
+        for( var index = 0; index < iterations; index++ ) {
+            result += chars.charAt( Math.floor( Math.random() * chars.length ) );
+        };     
+        return result;
+    };
+};
+
 function fileSelected() {
   	var file = document.getElementById('files').files[0];
   		if (file) {
@@ -70,17 +120,58 @@ function fileSelected() {
 }
 
 function uploadFile() {
+	var file = document.getElementById('files').files[0];
+	var loaded = 0;
+	var step = 256*1024;
+	var total = file.size;
+	var start = 0;
   	var xhr = new XMLHttpRequest();
-  	var fd = new FormData(document.getElementById('upload_form'));
+  	var fd = new FormData();
+  	fileName = generateUUID();
+  	averageSpeed = 0;
 
-  	/* event listners */
-  	xhr.upload.addEventListener("progress", uploadProgress, false);
-  	xhr.addEventListener("load", uploadComplete, false);
-  	xhr.addEventListener("error", uploadFailed, false);
-  	xhr.addEventListener("abort", uploadCanceled, false);
-  	/* Be sure to change the url below to the url of your upload server side script */
+  	fd.append('fileName', fileName);
+  	fd.append('reading', 'false');
+  	fd.append('title', document.getElementById('title'));
+  	fd.append('author', document.getElementById('author'));
+  	fd.append('tags', document.getElementById('tags'));
+  	fd.append('description', document.getElementById('description'));
+  	fd.append('category', document.getElementById('category'));
   	xhr.open("POST", "/upload/upload_data");
-  	xhr.send(fd);
+    xhr.send(fd);
+
+  	var reader = new FileReader();
+
+	reader.onload = function(e){
+		var xhr = new XMLHttpRequest();
+		var fd = new FormData();
+        var upload = xhr.upload;
+        xhr.addEventListener("load", uploadComplete, false);
+        upload.addEventListener('load',function(){
+	        loaded += step;
+	        var percentComplete = Math.round((loaded / total) * 100);
+	        document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+            if (loaded <= total) {
+                    blob = file.slice(loaded, loaded+step);
+                    reader.readAsBinaryString(blob);
+            } else {
+                    loaded = total;
+                    window.location = window.location.href + "/upload_success"
+            }
+	    },false);
+	    fd.append('blob', e.target.result);
+	    fd.append('reading', 'true');
+	    fd.append('fileName', fileName);
+	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+	    xhr.send(fd);
+
+	    checkUploadSpeed( 1, function ( speed, average ) {
+	    	document.getElementById( 'speed' ).textContent = 'speed: ' + speed + 'kbs';
+	    	document.getElementById( 'time' ).textContent = 'time remaining: ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
+		});
+	};
+	var blob = file.slice(start, step);
+	reader.readAsBinaryString(blob); 
 }
 
 function uploadProgress(evt) {
@@ -95,7 +186,8 @@ function uploadProgress(evt) {
 
 function uploadComplete(evt) {
   	/* This event is raised when the server send back a response */
-  	window.location = window.location.href + "/" + evt.target.responseText;
+  	if (evt.target.responseText == 'upload_fail')
+  		window.location = window.location.href + "/" + evt.target.responseText;
 }
 
 function uploadFailed(evt) {
