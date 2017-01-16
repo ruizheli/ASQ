@@ -1,5 +1,5 @@
 var tags;
-
+var averageSpeed = 0;
 function generateUUID() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -64,6 +64,46 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
+function checkUploadSpeed( iterations, update ) {
+    var index = 0,
+        timer = window.setInterval( check, 500 ); //check every 5 seconds
+    check();
+
+    function check() {
+        var xhr = new XMLHttpRequest(),
+            url = '?cache=' + Math.floor( Math.random() * 10000 ), //random number prevents url caching
+            data = getRandomString( 1 ), //1 meg POST size handled by all servers
+            startTime,
+            speed = 0;
+        xhr.onreadystatechange = function ( event ) {
+            if( xhr.readyState == 4 ) {
+                speed = Math.round( 1024 / ( ( new Date() - startTime ) / 1000 ) );
+                averageSpeed == 0 
+                    ? averageSpeed = speed 
+                    : averageSpeed = Math.round( ( averageSpeed + speed ) / 2 );
+                update( speed, averageSpeed );
+                index++;
+                if( index == iterations ) {
+                    window.clearInterval( timer );
+                };
+            };
+        };
+        xhr.open( 'POST', url, true );
+        startTime = new Date();
+        xhr.send( data );
+    };
+
+    function getRandomString( sizeInMb ) {
+        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]\{}|;':,./<>?", //random data prevents gzip effect
+            iterations = sizeInMb * 1024 * 1024, //get byte count
+            result = '';
+        for( var index = 0; index < iterations; index++ ) {
+            result += chars.charAt( Math.floor( Math.random() * chars.length ) );
+        };     
+        return result;
+    };
+};
+
 function fileSelected() {
   	var file = document.getElementById('files').files[0];
   		if (file) {
@@ -88,6 +128,7 @@ function uploadFile() {
   	var xhr = new XMLHttpRequest();
   	var fd = new FormData();
   	fileName = generateUUID();
+  	averageSpeed = 0;
 
   	fd.append('fileName', fileName);
   	fd.append('reading', 'false');
@@ -105,6 +146,7 @@ function uploadFile() {
 		var xhr = new XMLHttpRequest();
 		var fd = new FormData();
         var upload = xhr.upload;
+        xhr.addEventListener("load", uploadComplete, false);
         upload.addEventListener('load',function(){
 	        loaded += step;
 	        var percentComplete = Math.round((loaded / total) * 100);
@@ -114,15 +156,19 @@ function uploadFile() {
                     reader.readAsBinaryString(blob);
             } else {
                     loaded = total;
-                    fd.append('finished', 'true');
-                    xhr.addEventListener("load", uploadComplete, false);
+                    window.location = window.location.href + "/upload_success"
             }
 	    },false);
 	    fd.append('blob', e.target.result);
 	    fd.append('reading', 'true');
 	    fd.append('fileName', fileName);
-	    xhr.open("POST", "/upload/upload_data");
+	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
 	    xhr.send(fd);
+
+	    checkUploadSpeed( 1, function ( speed, average ) {
+	    	document.getElementById( 'speed' ).textContent = 'speed: ' + speed + 'kbs';
+	    	document.getElementById( 'time' ).textContent = 'time remaining: ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
+		});
 	};
 	var blob = file.slice(start, step);
 	reader.readAsBinaryString(blob); 
@@ -140,7 +186,8 @@ function uploadProgress(evt) {
 
 function uploadComplete(evt) {
   	/* This event is raised when the server send back a response */
-  	window.location = window.location.href + "/" + evt.target.responseText;
+  	if (evt.target.responseText == 'upload_fail')
+  		window.location = window.location.href + "/" + evt.target.responseText;
 }
 
 function uploadFailed(evt) {
