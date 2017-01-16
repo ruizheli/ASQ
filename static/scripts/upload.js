@@ -1,5 +1,15 @@
 var tags;
 
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+};
+
 //Validate Form
 function validateForm() {
     var author = document.forms["upload_form"]["author"].value.trim();
@@ -70,17 +80,52 @@ function fileSelected() {
 }
 
 function uploadFile() {
+	var file = document.getElementById('files').files[0];
+	var loaded = 0;
+	var step = 256*1024;
+	var total = file.size;
+	var start = 0;
   	var xhr = new XMLHttpRequest();
-  	var fd = new FormData(document.getElementById('upload_form'));
+  	var fd = new FormData();
+  	fileName = generateUUID();
 
-  	/* event listners */
-  	xhr.upload.addEventListener("progress", uploadProgress, false);
-  	xhr.addEventListener("load", uploadComplete, false);
-  	xhr.addEventListener("error", uploadFailed, false);
-  	xhr.addEventListener("abort", uploadCanceled, false);
-  	/* Be sure to change the url below to the url of your upload server side script */
+  	fd.append('fileName', fileName);
+  	fd.append('reading', 'false');
+  	fd.append('title', document.getElementById('title'));
+  	fd.append('author', document.getElementById('author'));
+  	fd.append('tags', document.getElementById('tags'));
+  	fd.append('description', document.getElementById('description'));
+  	fd.append('category', document.getElementById('category'));
   	xhr.open("POST", "/upload/upload_data");
-  	xhr.send(fd);
+    xhr.send(fd);
+
+  	var reader = new FileReader();
+
+	reader.onload = function(e){
+		var xhr = new XMLHttpRequest();
+		var fd = new FormData();
+        var upload = xhr.upload;
+        upload.addEventListener('load',function(){
+	        loaded += step;
+	        var percentComplete = Math.round((loaded / total) * 100);
+	        document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+            if (loaded <= total) {
+                    blob = file.slice(loaded, loaded+step);
+                    reader.readAsBinaryString(blob);
+            } else {
+                    loaded = total;
+                    fd.append('finished', 'true');
+                    xhr.addEventListener("load", uploadComplete, false);
+            }
+	    },false);
+	    fd.append('blob', e.target.result);
+	    fd.append('reading', 'true');
+	    fd.append('fileName', fileName);
+	    xhr.open("POST", "/upload/upload_data");
+	    xhr.send(fd);
+	};
+	var blob = file.slice(start, step);
+	reader.readAsBinaryString(blob); 
 }
 
 function uploadProgress(evt) {
