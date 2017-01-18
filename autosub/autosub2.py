@@ -1,6 +1,16 @@
+#!/usr/bin/env python
+ #coding=utf-8 
 from autofundation import *
 
-def find_speech_regions(filename, frame_width=4096,min_region_size=3, max_region_size=5):
+def within_ranges(time, ranges):
+    for r in ranges:
+        if time >= r[0] and time <= r[1]:
+            return True
+    return False
+
+def find_speech_regions(filename, ranges, frame_width=4096):
+    print "Ranges:"
+    print ranges
     reader = wave.open(filename)
     sample_width = reader.getsampwidth()
     rate = reader.getframerate()
@@ -16,7 +26,7 @@ def find_speech_regions(filename, frame_width=4096,min_region_size=3, max_region
         chunk = reader.readframes(frame_width)
         energies.append(audioop.rms(chunk, sample_width * n_channels))
 
-    threshold = percentile(energies, 0.2)
+    threshold = percentile(energies, 0.6)
 
     elapsed_time = 0
 
@@ -48,26 +58,35 @@ def find_speech_regions(filename, frame_width=4096,min_region_size=3, max_region
     #     elapsed_time += chunk_duration
 
     # Canceled min
+    # i=0
     for energy in energies:
         is_silence = energy <= threshold
-        max_exceeded = region_start and elapsed_time - region_start >= max_region_size
+        # i += 1
+        # print i
+        # print "elapsed_time: %d"%(elapsed_time)
+        # if region_start:
+        #     print "start: %d"%(region_start)
+        # if is_silence:
+        #     print "silence"
+        # if within_ranges(elapsed_time,ranges):
+        #     print "in ranges"
+    
+        if is_silence and region_start and within_ranges(region_start,ranges):
+            print "here!!!!!!"
+            regions.append((region_start, elapsed_time))
+            region_start = None
 
-        if is_silence and region_start:
-            if max_exceeded:
-                regions.append((region_start, elapsed_time))
-                region_start = None
-
-        elif (not region_start) and (not is_silence):
+        elif (not region_start) and (not is_silence) and within_ranges(elapsed_time,ranges):
             region_start = elapsed_time
         elapsed_time += chunk_duration
-    if region_start:
+    if region_start and within_ranges(elapsed_time,ranges):
         regions.append((region_start, elapsed_time))
-        print "Regions:"
     print regions
+
     return regions
 
 
-def autosub(source_path, concurrency=10, output=None, format="srt", src_language="en", dst_language="en", api_key=None):
+def autosub2(source_path,  ranges=None, key=None, concurrency=10, output=None, format="json", src_language="en", dst_language="en", api_key=None):
 
     if format not in FORMATTERS.keys():
         print("Subtitle format not supported. Run with --list-formats to see all supported formats.")
@@ -95,8 +114,9 @@ def autosub(source_path, concurrency=10, output=None, format="srt", src_language
     source_path = source_path
     output_path = source_path
     audio_filename, audio_rate = extract_audio(source_path)
+
   
-    regions = find_speech_regions(audio_filename)
+    regions = find_speech_regions(audio_filename,ranges=ranges)
     pool = multiprocessing.Pool(concurrency)
     converter = FLACConverter(source_path=audio_filename)
     recognizer = SpeechRecognizer(language=src_language, rate=audio_rate, api_key=GOOGLE_SPEECH_API_KEY)
@@ -146,14 +166,7 @@ def autosub(source_path, concurrency=10, output=None, format="srt", src_language
     timed_subtitles = [(r, t) for r, t in zip(regions, transcripts) if t]
     formatter = FORMATTERS.get(format)
     formatted_subtitles = formatter(timed_subtitles)
-    dest = output
-    if dest is None:
-        base, ext = os.path.splitext(output_path)
-        dest = "{base}.{format}".format(base=base, format=format)
-    with open(dest, 'wb') as f:
-        f.write(formatted_subtitles.encode("utf-8"))
-    print "Subtitles file created at {}".format(dest)
     os.remove(audio_filename)
 
-    return 0
+    return formatted_subtitles
 
