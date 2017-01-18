@@ -34,4 +34,4 @@ def get_times(keys,file_pwd,transcript_timed_dir,key_time_map_dir):
 	key_time_map_file.write(json.dumps(key_time_map))
 	key_time_map_file.close()
 
-get_times(['work','start'],'/Users/n0where/Desktop/DFA_01.flac','./transcripts/DFA.json','./transcripts/test2.json')
+get_times(['video'],'/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom.mp4','/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom.json','/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom_keys.json')
