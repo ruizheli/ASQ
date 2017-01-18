@@ -39,37 +39,38 @@
 		<br>
 
 		<div class="container">
-			<form action="/upload/upload_data" method="POST" name="upload_form" id="upload_form" enctype="multipart/form-data"> <!-- onsubmit="return validateForm();"> -->
+			<form action="/upload/upload_data" method="POST" name="upload_form" id="upload_form" enctype="multipart/form-data"> 
 				<h4 class="upload_hint">Select files from your computer</h4>
 				<label class="btn btn-default btn-file upload_hint" id="browse_button" style="display: table;">
 				    Browse File
 				    <input type="file" id="files" name="file" onchange="fileSelected();" style="display: none;">
 				</label>
-				<div id="fileName"></div>
-    			<div id="fileSize"></div>
-    			<div id="fileType"></div>
-    			<div id="progressNumber"></div>
-    			<div id="speed">speed: 0kbs</div>
-				<div id="time">time remaining: 0s</div>
 
 				<h4 class="upload_hint"><br>Or drag and drop files below</h4>
 				<div id="drop_zone" class="upload_hint">
 					Just drag and drop file here<br>
 				</div>
-				<h4 class="upload_show" style="display: none;">File selected</h4>
-				<output id="list" class="upload_show"></output>
 
-				<div class="progress upload_show" id="progress-bar" style="display: none;">
+				<h4 class="upload_show" style="display: none;">File selected</h4>
+				<ul class="upload_show" style="display: none;">
+					<li><div id="fileName"></div></li>
+					<li><div id="fileSize"></div></li>
+					<li><div id="fileType"></div></li>
+					<li><div id="speed"><strong>Speed:</strong> upload not started</div></li>
+					<li><div id="time"><strong>Time Remaining:</strong> upload not started</div></li>
+				</ul>
+
+				<div class="progress" id="progress-bar" style="display: none;">
 					<div class="progress-bar progress-bar-striped active percent upload_show" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
 				    	<span class="sr-only">0% Complete</span>
 				  	</div>
 				</div>
 
-				<button type="button" class="btn btn-default upload_show" onclick="abortRead()" style="display: none;">Cancel Upload</button>
-
-				<br><br>
-				<p>All fields marked with <font color="red">*</font> are required</p>
-				<div class="row">
+				<button type="button" class="btn btn-default upload_show" id="cancel_upload" onclick="abortRead()" style="display: none;">Cancel Upload</button>
+				
+				<div class="row" id="form_data">
+					<br>
+					<p>All fields marked with <font color="red">*</font> are required</p>
 					<div class="col-md-5">
 						Title <font color="red">*</font>: <input type="text" class="form-control" name="title"><br>
 						Author <font color="red">*</font>: <input type="text" class="form-control" name="author"/><br>
@@ -93,11 +94,21 @@
 						<textarea name="textcontent" cols="40" rows="4" class="form-control" name="description"></textarea><br>
 					</div>
 				</div>
-				<br>
-				<input type="button" class="btn btn-default" id="submit_button" onclick="uploadFile();" value="Upload">
+
+				<input type="button" class="btn btn-default" id="submit_button" onclick="validateForm();" value="Upload">
 				<br><br>
 
 			</form>
+
+			<div id="insturction" style="display: none;">
+				<h4>Please wait, your recording is being uploaded</h4>
+				<ul>
+					<li>You will be redirected to home page once the upload is completed</li>
+					<li>The recording will be saved to our database for future reference</li>
+					<li>You can find any word appeared in the recording by using the search box on the homepage</li>
+				</ul>
+				<br><br><br>
+			</div>
 		</div>
 
 	</div>
