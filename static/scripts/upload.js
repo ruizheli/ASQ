@@ -1,26 +1,5 @@
 var tags;
 var averageSpeed = 0;
-
-//Progress Bar
-var progress = document.querySelector('.percent');
-
-// Setup the dnd listeners.
-var dropZone = document.getElementById('drop_zone');
-dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('drop', handleFileDropped, false);
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
-//Prevent Drag Over
-window.addEventListener("dragover",function(e){
-	e = e || event;
-	e.preventDefault();
-},false);
-window.addEventListener("drop",function(e){
-	e = e || event;
-	e.preventDefault();
-},false);
-
-
 function generateUUID() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -31,26 +10,18 @@ function generateUUID() {
     return uuid;
 };
 
-
 //Validate Form
 function validateForm() {
-
     var author = document.forms["upload_form"]["author"].value.trim();
     var title = document.forms["upload_form"]["title"].value.trim();
     var category = document.forms["upload_form"]["category"].value.trim();
     var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
-    var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
-
-    if (tags == "" && tags_input != ""){
-    	tags = tags_input;
-    }
 
     if (author == "" || title == "" || category == "" || tags == "") {
         alert("All fields marked with * are required");
         return false;
     }
-
-    return uploadFile();
+    return true;
 }
 
 
@@ -93,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
-
 function checkUploadSpeed( iterations, update ) {
     var index = 0,
         timer = window.setInterval( check, 500 ); //check every 5 seconds
@@ -134,36 +104,23 @@ function checkUploadSpeed( iterations, update ) {
     };
 };
 
-
 function fileSelected() {
   	var file = document.getElementById('files').files[0];
-	
-	if (file) {
-		var fileSize = 0;
+  		if (file) {
+    	var fileSize = 0;
     	if (file.size > 1024 * 1024)
       		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
     	else
-      		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
-        
-      	console.log("name: "+file.name);
-      	console.log(fileSize);
-
-    	document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + file.name;
-    	document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + fileSize;
-    	document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + file.type;
+      	fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+          
+    	document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
+    	document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
+    	document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
   	}
 }
 
-
 function uploadFile() {
-
 	var file = document.getElementById('files').files[0];
-
-	if (!file) {
-		alert("File not uploaded!")
-		return;
-	}
-	
 	var loaded = 0;
 	var step = 256*1024;
 	var total = file.size;
@@ -172,12 +129,6 @@ function uploadFile() {
   	var fd = new FormData();
   	fileName = generateUUID();
   	averageSpeed = 0;
-
-  	document.getElementById("progress-bar").style.display = "block";
-  	document.getElementById("cancel_upload").style.display = "none";
-	document.getElementById("submit_button").style.display = "none";
-	document.getElementById("form_data").style.display = "none";
-	document.getElementById("insturction").style.display = "block";
 
   	fd.append('fileName', fileName);
   	fd.append('reading', 'false');
@@ -190,25 +141,22 @@ function uploadFile() {
     xhr.send(fd);
 
   	var reader = new FileReader();
-	var xhr = new XMLHttpRequest();
 
 	reader.onload = function(e){
+		var xhr = new XMLHttpRequest();
 		var fd = new FormData();
         var upload = xhr.upload;
         xhr.addEventListener("load", uploadComplete, false);
         upload.addEventListener('load',function(){
 	        loaded += step;
 	        var percentComplete = Math.round((loaded / total) * 100);
-
-	        progress.style.width = percentComplete.toString() + '%';
-			progress.textContent = percentComplete.toString() + '%';
-
+	        document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
             if (loaded <= total) {
                     blob = file.slice(loaded, loaded+step);
                     reader.readAsBinaryString(blob);
             } else {
                     loaded = total;
-                    window.location = window.location.href + "/upload_success"
+                    window.location = window.location.href + "/upload_success";
             }
 	    },false);
 	    fd.append('blob', e.target.result);
@@ -218,17 +166,15 @@ function uploadFile() {
 	    xhr.send(fd);
 
 	    checkUploadSpeed( 1, function ( speed, average ) {
-	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
-	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
+	    	document.getElementById( 'speed' ).textContent = 'speed: ' + speed + 'kbs';
+	    	document.getElementById( 'time' ).textContent = 'time remaining: ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
 		});
 	};
 	var blob = file.slice(start, step);
 	reader.readAsBinaryString(blob); 
 }
 
-
 function uploadProgress(evt) {
-
   	if (evt.lengthComputable) {
     	var percentComplete = Math.round(evt.loaded * 100 / evt.total);
     	document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
@@ -238,19 +184,50 @@ function uploadProgress(evt) {
   	}
 }
 
-
 function uploadComplete(evt) {
   	/* This event is raised when the server send back a response */
   	if (evt.target.responseText == 'upload_fail')
   		window.location = window.location.href + "/" + evt.target.responseText;
 }
 
+function uploadFailed(evt) {
+  	alert("There was an error attempting to upload the file.");
+}
+
+function uploadCanceled(evt) {
+  	alert("The upload has been canceled by the user or the browser dropped the connection.");
+} 
+
+//Prevent Drag Over
+window.addEventListener("dragover",function(e){
+	e = e || event;
+	e.preventDefault();
+},false);
+
+
+window.addEventListener("drop",function(e){
+	e = e || event;
+	e.preventDefault();
+},false);
+
+// Setup the dnd listeners.
+var dropZone = document.getElementById('drop_zone');
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileDropped, false);
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+//Progress Bar
+var reader = null;
+var progress = document.querySelector('.percent');
 
 function abortRead() {
+	//console.log( "reader = " + reader ); 
 	if( reader != null ) {
 		reader.abort();
-		document.getElementById("upload_form").reset();
 		
+		// TODO (only a simpke fix; handler put here)
+		reader.onabort(); // call handler explicitly
 		uploadhint = document.getElementsByClassName("upload_hint");
 		for (var i = 0; i < uploadhint.length; i++) {
 			uploadhint[i].style.display = 'block';
@@ -265,8 +242,8 @@ function abortRead() {
 	}
 }
 
-
 function errorHandler(evt) {
+	//console.log("errorHandler(" + evt + ")");
 	switch(evt.target.error.code) {
 		case evt.target.error.NOT_FOUND_ERR:
 			alert('File Not Found!');
@@ -281,22 +258,22 @@ function errorHandler(evt) {
 	}
 }
 
-// // Progress bar update
-// function updateProgress(evt) {
-// if (evt.lengthComputable) {
-// 	var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-// 		// Increase the progress bar length.
-// 		if (percentLoaded < 100) {
-// 			progress.style.width = percentLoaded + '%';
-// 			progress.textContent = percentLoaded + '%';
-// 		}
-// 	}
-// }
+// Progress bar update
+function updateProgress(evt) {
+// evt is an ProgressEvent.
+if (evt.lengthComputable) {
+	var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+		// Increase the progress bar length.
+		if (percentLoaded < 100) {
+			progress.style.width = percentLoaded + '%';
+			progress.textContent = percentLoaded + '%';
+		}
+	}
+}
 
 
 // Select file
 function handleFileSelect(evt) {
-
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
 		uploadhint[i].style.display = 'none';
@@ -312,17 +289,36 @@ function handleFileSelect(evt) {
 
 	reader = new FileReader();
 	reader.onerror = errorHandler;
+	reader.onprogress = updateProgress;
+	reader.onabort = function(e) {
+		//alert('File upload cancelled');
+	};
+	// reader.onloadstart = function(e) {
+	// 	document.getElementById('progress_bar').className = 'loading';
+	// };
+	reader.onload = function(e) {
+		// Ensure that the progress bar displays 100% at the end.
+		progress.style.width = '100%';
+		progress.textContent = '100%';
+	};
 
 	// Read in the image file as a binary string.
 	reader.readAsBinaryString(evt.target.files[0]);
 
+	var output = [];
+	for (var i = 0, f; f = evt.target.files[i]; i++) {
+		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+			f.size, ' bytes, last modified: ',
+			f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+			'</li>');
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
 
 
 // Drop file
 function handleFileDropped(evt) {
-	fileSelected();
 	uploadhint = document.getElementsByClassName("upload_hint");
 	for (var i = 0; i < uploadhint.length; i++) {
 		uploadhint[i].style.display = 'none';
@@ -343,25 +339,38 @@ function handleFileDropped(evt) {
 
 	reader = new FileReader();
 	reader.onerror = errorHandler;
+	reader.onprogress = updateProgress;
+
+	reader.onabort = function(e) {
+		//alert('File read cancelled');
+	};
+
+	// reader.onloadstart = function(e) {
+	// 	document.getElementById('progress_bar').className = 'loading';
+	// };
+	
+	reader.onload = function(e) {
+		// Ensure that the progress bar displays 100% at the end.
+		progress.style.width = '100%';
+		progress.textContent = '100%';
+	}
 
 	// Read in the image file as a binary string.
 	reader.readAsBinaryString(files[0]);
 
+	// files is a FileList of File objects. List some properties.
+	var output = [];
+	for (var i = 0, f; f = files[i]; i++) {
+		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+			f.size, ' bytes, last modified: ',
+			f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+			'</li>');
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
-
 
 function handleDragOver(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
 	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
-
-
-function uploadFailed(evt) {
-  	alert("There was an error attempting to upload the file.");
-}
-
-
-function uploadCanceled(evt) {
-  	alert("The upload has been canceled by the user or the browser dropped the connection.");
-} 
