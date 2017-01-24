@@ -10,7 +10,7 @@ import re
 from azure.storage.blob import AppendBlobService
 from pprint import pprint
 
-append_blob_service = AppendBlobService(account_name='asq', account_key='N9gBpIgrR2qlaLVw/A9wHEQaUi6Yp4wR9rRZmTNwScsPm4lhT/uCLSMzKCOPwR/O0a8HMoDQv29qxwGt60XpFw==')
+append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 
 @route('/upload/upload_data', method='POST')
 def upload_data():
@@ -24,17 +24,17 @@ def upload_data():
 			category = request.forms.get('category')
 			media_file_name = request.forms.get('fileName')
 
-			server = 'tcp:asq-bottle.database.windows.net'
-			database = 'asq-bottle'
-			username = 'ruizheli@asq-bottle'
+			server = 'tcp:asq-file.database.windows.net'
+			database = 'asq-file'
+			username = 'ruizheli@asq-file'
 			password = 'Fzj990418.'
 			driver= '{ODBC Driver 13 for SQL Server}'
 
 			# pyodbc part, for deploying only
-			# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+			conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 			
 			# pymssql part, for testing only
-			conn = pymssql.connect(server='asq-bottle.database.windows.net',user='ruizheli@asq-bottle.database.windows.net', password='Fzj990418.', database='asq-bottle')
+			# conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
 
 			# logics for uploading
 			cursor = conn.cursor()
