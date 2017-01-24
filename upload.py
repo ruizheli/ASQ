@@ -38,7 +38,7 @@ def upload_data():
 
 			# logics for uploading
 			cursor = conn.cursor()
-			query = """INSERT INTO [dbo].[asq_file_data] ([title], [author], [tags], [description], [subject], [format], [file], [transcript_timed], [key_time_map]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'testTranscript\', N\'testMap\')"""
+			query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\')"""
 			cursor.execute(query % (title, author, tags, description, category, media_file_name,))
 
 			conn.commit()
