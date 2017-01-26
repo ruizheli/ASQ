@@ -29,23 +29,25 @@ def file_upload(file_pwd):
 	else: 
 		raise fileNameError('fileNameError')
 	transcripts_timed_pwd = file_dir + file_name + '.json'
-	autosubing(file_pwd,transcripts_timed_pwd,file_type)
-	whoosh_indexing(file_name,file_pwd,transcripts_timed_pwd)
+	result = autosub(file_pwd, format="json")
+	print "Generated data structure: \n"
+	return result
+	# whoosh_indexing(file_name,file_pwd,transcripts_timed_pwd)
 
-def autosubing(file_pwd,transcripts_timed_pwd,file_type):
-	if not os.path.isfile(transcripts_timed_pwd):
-		if file_format(file_type) == 1:	
-			# command = "python ./autosub/autosub.py -F json -V %s" %(file_pwd)
-			# command = "python ./autosub/autosub.py %s -F json" %(file_pwd)
-			autosub(file_pwd, format="json")
-		elif file_format(file_type) == 2:
-			# command = "python ./autosub/autosub.py %s -F json" %(file_pwd)
-			autosub(file_pwd, format="json")
-		else:
-			autosub(file_pwd, format="json")
-		print "Autosubed"
-	else: 
-		print 'file has already been autosubed'
+# def autosubing(file_pwd,transcripts_timed_pwd,file_type):
+# 	if not os.path.isfile(transcripts_timed_pwd):
+# 		if file_format(file_type) == 1:	
+# 			# command = "python ./autosub/autosub.py -F json -V %s" %(file_pwd)
+# 			# command = "python ./autosub/autosub.py %s -F json" %(file_pwd)
+# 			autosub(file_pwd, format="json")
+# 		elif file_format(file_type) == 2:
+# 			# command = "python ./autosub/autosub.py %s -F json" %(file_pwd)
+# 			autosub(file_pwd, format="json")
+# 		else:
+# 			autosub(file_pwd, format="json")
+# 		print "Autosubed"
+# 	else: 
+# 		print 'file has already been autosubed'
 
 def whoosh_indexing(file_name,file_pwd,transcripts_timed_pwd):
 	json_data = open(transcripts_timed_pwd)
@@ -84,7 +86,7 @@ dir2 = '/Users/n0where/Desktop/DFA_01.flac'
 dir3 = '/Users/n0where/GoogleDrive/ASQ/ASQ/transcripts/Chem101.mp4'
 dir4 = '/Users/n0where/GoogleDrive/WeixinBot/saved/voices/voice_1089270824656503909.mp3'
 dir5 = '/Users/n0where/GoogleDrive/WeixinBot/saved/voices/voice_8675834799709315495.mp3'
-dir6 = '/Users/n0where/GoogleDrive/ASQ/ASQ/transcripts/Atom.mp4'
+dir6 = '/Users/n0where/GoogleDrive/ASQ/ASQ/transcripts/Chem101.mp4'
 dir7 = "/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom.mp4"
 print file_upload(dir7)
 

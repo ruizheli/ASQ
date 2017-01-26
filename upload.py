@@ -32,10 +32,10 @@ def upload_data():
 		driver= '{ODBC Driver 13 for SQL Server}'
 
 		# pyodbc part, for deploying only
-		conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+		# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 		
 		# pymssql part, for testing only
-		# conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
+		conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
 
 		# logics for uploading
 		cursor = conn.cursor()
