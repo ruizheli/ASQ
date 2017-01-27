@@ -8,8 +8,12 @@ import time
 import uuid
 import re
 import sys
+import tempfile
+import os
 from azure.storage.blob import AppendBlobService
 from pprint import pprint
+from maintest import file_upload
+from multiprocessing import Process, Queue
 
 append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 
@@ -32,10 +36,10 @@ def upload_data():
 		driver= '{ODBC Driver 13 for SQL Server}'
 
 		# pyodbc part, for deploying only
-		# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+		conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 		
 		# pymssql part, for testing only
-		conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
+		# conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
 
 		# logics for uploading
 		cursor = conn.cursor()
@@ -45,13 +49,14 @@ def upload_data():
 		conn.commit()
 		conn.close()
 
+		print(media_file_name)
+
 		append_blob_service.create_blob('media-file', media_file_name)
 		print('finished SQL entry')
 	elif (request.forms.get('finished') != 'true'):
 		print('loading blob entry')
 		blob = base64.b64decode(request.forms.get('blob'))
-		media_file_name = request.forms.get('fileName')
-		# print(blob)
+		media_file_name = request.forms.get('fileName') + ''
 
 		append_blob_service.append_blob_from_text(
 			'media-file',
@@ -60,6 +65,46 @@ def upload_data():
 		)
 		print(sys.getsizeof(blob))
 		print('finished blob entry')
+	elif (request.forms.get('finished') == 'true'):
+		p = Process(target=processor, args=(request.forms,))
+		p.start()
 	# except UploadError:
 		# print('upload error')
 		# return("upload_fail")
+
+def processor(form):
+	print(form.get('fileName'))
+	media_file_name = form.get('fileName')
+	if not os.path.exists("temp_index"):
+		os.mkdir("temp_index")
+	if not os.path.exists("temp"):
+		os.mkdir("temp")
+	content = append_blob_service.get_blob_to_bytes(
+		'media-file',
+		media_file_name,
+		max_connections=10
+	)
+	print(content)
+	temp_file_name = media_file_name+'.mp4'
+	temp_file_name = os.path.join('temp', temp_file_name)
+	tf = open(temp_file_name, 'w+b')
+	tf.write(content.content)
+	tf.close()
+	cwd = os.getcwd()
+	# index_file_name = os.path.join('temp_index', I_FILE_NAME)
+	# index_file = open(index_file_name, 'w+b')
+	# index_content = append_blob_service.get_blob_to_bytes(
+	# 	'search-file',
+	# 	I_FILE_NAME
+	# )
+	# index_file.write(index_content.content)
+	# index_file.close()
+	transcript = file_upload(os.path.join(cwd, temp_file_name), append_blob_service)
+	append_blob_service.create_blob('transcript', media_file_name)
+	append_blob_service.append_blob_from_text(
+		'transcript',
+		media_file_name,
+		transcript
+	)
+	os.remove(os.path.join(cwd, temp_file_name))
+	# os.remove(os.path.join(cwd, 'temp_index', I_FILE_NAME))

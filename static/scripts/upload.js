@@ -216,14 +216,13 @@ function uploadFile() {
 	}
 	
 	var loaded = 0;
-	var step = 2048*1024;
+	var step = 512*1024;
 	var total = file.size;
 	var start = 0;
   	var xhr = new XMLHttpRequest();
   	var fd = new FormData();
   	fileName = generateUUID();
   	averageSpeed = 0;
-  	alert(total);
 
   	document.getElementById("progress-bar").style.display = "block";
   	document.getElementById("cancel_upload").style.display = "none";
@@ -249,6 +248,7 @@ function uploadFile() {
 		var fd = new FormData();
 		var xhr = new XMLHttpRequest();
         var upload = xhr.upload;
+        var processDone = false;
         xhr.addEventListener("load", uploadComplete, false);
         upload.addEventListener('load',function(){
 	        loaded += step;
@@ -261,8 +261,18 @@ function uploadFile() {
                     blob = file.slice(loaded, loaded+step);
                     reader.readAsArrayBuffer(blob);
             } else {
+            	if (!processDone) {
                     loaded = total;
-                    window.location = window.location.href + "/upload_success"
+                    fd.append('finished', 'true');
+                    fd.append('fileName', fileName);
+                    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+	    			xhr.send(fd);
+	    			processDone = true;
+                } else {
+                	setTimeout(function () {
+	        			window.location = window.location.href + "/upload_success";
+    				}, 500);
+                }
             }
 	    },false);
 	    fd.append('blob', base64ArrayBuffer(e.target.result));
@@ -271,13 +281,12 @@ function uploadFile() {
 	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
 	    xhr.send(fd);
 
-	    checkUploadSpeed( 1, function ( speed, average ) {
+	    checkUploadSpeed( 10, function ( speed, average ) {
 	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
 	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
 		});
 	};
 	var blob = file.slice(start, step);
-	alert(blob.size*8)
 	reader.readAsArrayBuffer(blob); 
 }
 

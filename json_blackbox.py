@@ -1,9 +1,8 @@
 import json
 import re
 import hashlib
-from autosub.autosub2 import autosub2
 
-def get_times(keys,file_pwd,transcript_timed_dir,key_time_map_dir):
+def get_times(keys, transcript_timed_dir, key_time_map_dir, file_pwd = None,):
 	transcript_timed_file = open(transcript_timed_dir,'r')
 	transcript_timed = json.load(transcript_timed_file)
 	transcript_timed_file.close()
@@ -25,13 +24,11 @@ def get_times(keys,file_pwd,transcript_timed_dir,key_time_map_dir):
 				start = i["start"]
 				end = i["end"]
 				key_ranges_map[k].append([start,end])
-	for k in keys:
-		ranges = key_ranges_map[k]
-		time = autosub2(file_pwd,ranges,k)
-		key_time_map.update({k: time})
+	# this is for more accurate time line
+	# for k in keys:
+	# 	ranges = key_ranges_map[k]
+	# 	time = autosub2(file_pwd,ranges,k)
+	# 	key_time_map.update({k: time})
+	return json.dumps(key_ranges_map)
 
-	key_time_map_file = open(key_time_map_dir,'w')		
-	key_time_map_file.write(json.dumps(key_time_map))
-	key_time_map_file.close()
-
-get_times(['video'],'/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom.mp4','/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom.json','/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/Atom_keys.json')
+print get_times(['atom'],'./transcripts/Atom.json','./transcripts/Atom_keys.json')
