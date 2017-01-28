@@ -58,7 +58,7 @@ def upload_success():
 
 @route('/upload/upload_fail')
 @view('upload_fail')
-def upload_success():
+def upload_fail():
     """Renders the info page."""
     return dict(
         title='Upload Success',
