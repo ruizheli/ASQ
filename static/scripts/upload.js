@@ -269,9 +269,9 @@ function uploadFile() {
 	    			xhr.send(fd);
 	    			processDone = true;
                 } else {
-                	setTimeout(function () {
-	        			window.location = window.location.href + "/upload_success";
-    				}, 500);
+        //         	setTimeout(function () {
+	       //  			window.location = window.location.href + "/upload_success";
+    				// }, 500);
                 }
             }
 	    },false);
