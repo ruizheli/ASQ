@@ -3,5 +3,6 @@ function go_upload() {
 }
 
 function go_search() {
-	window.location = "/search";
+	var key = document.getElementById('search').value;
+	window.location = "/search/"+key;
 }
