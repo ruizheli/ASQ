@@ -126,8 +126,8 @@ def get_files(title):
 		max_connections=10
 	)
 	print(content)
-	temp_file_name = 'test.mp4'
-	video_pwd = os.path.join('temp', temp_file_name)
+	temp_file_name = title+'.mp4'
+	video_pwd = os.path.join('static', 'content', temp_file_name)
 	tf = open(video_pwd, 'w+b')
 	tf.write(content.content)
 	tf.close()
