@@ -46,6 +46,7 @@ def upload_data():
 		description = request.forms.get('description')
 		category = request.forms.get('category')
 		media_file_name = request.forms.get('fileName')
+		education = request.forms.get('school')
 
 		server = 'tcp:asq-file.database.windows.net'
 		database = 'asq-file'
@@ -54,15 +55,15 @@ def upload_data():
 		driver= '{ODBC Driver 13 for SQL Server}'
 
 		# pyodbc part, for deploying only
-		conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+		# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 		
 		# pymssql part, for testing only
-		# conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
+		conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
 
 		# logics for uploading
 		cursor = conn.cursor()
-		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\')"""
-		cursor.execute(query % (title, author, tags, description, category, media_file_name,))
+		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\')"""
+		cursor.execute(query % (title, author, tags, description, category, media_file_name, education,))
 
 		conn.commit()
 		conn.close()

@@ -30,7 +30,6 @@ def upload():
 @view('search')
 def search():
     """Renders the info page."""
-    v = append_blob_service.get_blob_to_bytes('016fa16f-b667-4326-8383-a8b02f0b2c7c')
     return dict(
         video=v.content,
         title='Search Result',

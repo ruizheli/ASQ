@@ -56,8 +56,8 @@ def whoosh_indexing(file_name,file_pwd,transcript, append_blob_service):
 	schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
 	if not os.path.exists("temp_index"):
 	    os.mkdir("temp_index")
-	ix = index.create_in("temp_index", schema, indexname='transcript')
-	# ix = index.open_dir("temp_index", indexname='transcript')
+	ix = index.create_in("temp_index", schema)
+	# ix = index.open_dir("temp_index")
 	writer = ix.writer()
 	writer.update_document(title=file_name.decode('utf-8'), path=file_pwd.decode('utf-8'), content=transcripts_content.decode('utf-8'))
 	writer.commit()

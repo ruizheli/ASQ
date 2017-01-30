@@ -237,6 +237,7 @@ function uploadFile() {
   	fd.append('tags', document.getElementById('tags').value);
   	fd.append('description', document.getElementById('description').value);
   	fd.append('category', document.getElementById('category').value);
+  	fd.append('school', document.getElementById('school').value);
 
   	xhr.open("POST", "/upload/upload_data");
     xhr.send(fd);
