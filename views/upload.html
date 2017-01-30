@@ -72,15 +72,15 @@
 					<br>
 					<p>All fields marked with <font color="red">*</font> are required</p>
 					<div class="col-md-5">
-						Title <font color="red">*</font>: <input type="text" class="form-control" name="title"><br>
-						Author <font color="red">*</font>: <input type="text" class="form-control" name="author"/><br>
-						Course: <input type="text" class="form-control" name="course"/><br>
-						Educational Institution: <input type="text" class="form-control" name="school"/><br>
+						Title <font color="red">*</font>: <input type="text" id="title" class="form-control" name="title"><br>
+						Author <font color="red">*</font>: <input type="text" id="author" class="form-control" name="author"/><br>
+						Course: <input type="text" class="form-control" id="course" name="course"/><br>
+						Educational Institution: <input type="text" id="school" class="form-control" name="school"/><br>
 					</div>
 					<div class="col-md-1"></div>
 					<div class="col-md-5">
 						Category <font color="red">*</font>: <br>
-						<select class="selectpicker" name=category title="Categories...">
+						<select class="selectpicker" id="category" name=category title="Categories...">
 							<option>Arts</option>
 							<option>Business</option>
 							<option>Computer Science/Information Technology</option>
@@ -99,7 +99,7 @@
 						<input id="tags" class="form-control" name="tags-input" type="text">
 						<input type="hidden" name="tags-hidden" disabled="disabled"> <br>
 						Description:<br>
-						<textarea name="textcontent" cols="40" rows="4" class="form-control" name="description"></textarea><br>
+						<textarea name="textcontent" cols="40" rows="4" id="description" class="form-control" name="description"></textarea><br>
 					</div>
 				</div>
 

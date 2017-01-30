@@ -62,8 +62,7 @@ def find_speech_regions(filename, frame_width=4096,min_region_size=3, max_region
         elapsed_time += chunk_duration
     if region_start:
         regions.append((region_start, elapsed_time))
-        print "Regions:"
-    print regions
+    print "Generating regions"
     return regions
 
 
@@ -146,14 +145,18 @@ def autosub(source_path, concurrency=10, output=None, format="srt", src_language
     timed_subtitles = [(r, t) for r, t in zip(regions, transcripts) if t]
     formatter = FORMATTERS.get(format)
     formatted_subtitles = formatter(timed_subtitles)
-    dest = output
-    if dest is None:
-        base, ext = os.path.splitext(output_path)
-        dest = "{base}.{format}".format(base=base, format=format)
-    with open(dest, 'wb') as f:
-        f.write(formatted_subtitles.encode("utf-8"))
-    print "Subtitles file created at {}".format(dest)
-    os.remove(audio_filename)
+    # print "hererrrrrrr"
+    # for i in formatted_subtitles:
+    #     print i
+    return formatted_subtitles
+    # dest = output
+    # if dest is None:
+    #     base, ext = os.path.splitext(output_path)
+    #     dest = "{base}.{format}".format(base=base, format=format)
+    # with open(dest, 'wb') as f:
+    #     f.write(formatted_subtitles.encode("utf-8"))
+    # print "Subtitles file created at {}".format(dest)
+    # os.remove(audio_filename)
 
-    return 0
+    # return 0
 

@@ -20,6 +20,57 @@ window.addEventListener("drop",function(e){
 	e.preventDefault();
 },false);
 
+function base64ArrayBuffer(arrayBuffer) {
+  var base64    = ''
+  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+  var bytes         = new Uint8Array(arrayBuffer)
+  var byteLength    = bytes.byteLength
+  var byteRemainder = byteLength % 3
+  var mainLength    = byteLength - byteRemainder
+
+  var a, b, c, d
+  var chunk
+
+  // Main loop deals with bytes in chunks of 3
+  for (var i = 0; i < mainLength; i = i + 3) {
+    // Combine the three bytes into a single integer
+    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+    // Use bitmasks to extract 6-bit segments from the triplet
+    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
+    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
+    d = chunk & 63               // 63       = 2^6 - 1
+
+    // Convert the raw binary segments to the appropriate ASCII encoding
+    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+  }
+
+  // Deal with the remaining bytes and padding
+  if (byteRemainder == 1) {
+    chunk = bytes[mainLength]
+
+    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+    // Set the 4 least significant bits to zero
+    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
+
+    base64 += encodings[a] + encodings[b] + '=='
+  } else if (byteRemainder == 2) {
+    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
+
+    // Set the 2 least significant bits to zero
+    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
+
+    base64 += encodings[a] + encodings[b] + encodings[c] + '='
+  }
+  
+  return base64
+}
 
 function generateUUID() {
     var d = new Date().getTime();
@@ -35,20 +86,20 @@ function generateUUID() {
 //Validate Form
 function validateForm() {
 
-    var author = document.forms["upload_form"]["author"].value.trim();
-    var title = document.forms["upload_form"]["title"].value.trim();
-    var category = document.forms["upload_form"]["category"].value.trim();
-    var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
-    var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
+    // var author = document.forms["upload_form"]["author"].value.trim();
+    // var title = document.forms["upload_form"]["title"].value.trim();
+    // var category = document.forms["upload_form"]["category"].value.trim();
+    // var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
+    // var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
 
-    if (tags == "" && tags_input != ""){
-    	tags = tags_input;
-    }
+    // if (tags == "" && tags_input != ""){
+    // 	tags = tags_input;
+    // }
 
-    if (author == "" || title == "" || category == "" || tags == "") {
-        alert("All fields marked with * are required");
-        return false;
-    }
+    // if (author == "" || title == "" || category == "" || tags == "") {
+    //     alert("All fields marked with * are required");
+    //     return false;
+    // }
 
     return uploadFile();
 }
@@ -165,7 +216,7 @@ function uploadFile() {
 	}
 	
 	var loaded = 0;
-	var step = 256*1024;
+	var step = 512*1024;
 	var total = file.size;
 	var start = 0;
   	var xhr = new XMLHttpRequest();
@@ -181,11 +232,12 @@ function uploadFile() {
 
   	fd.append('fileName', fileName);
   	fd.append('reading', 'false');
-  	fd.append('title', document.getElementById('title'));
-  	fd.append('author', document.getElementById('author'));
-  	fd.append('tags', document.getElementById('tags'));
-  	fd.append('description', document.getElementById('description'));
-  	fd.append('category', document.getElementById('category'));
+  	fd.append('title', document.getElementById('title').value);
+  	fd.append('author', document.getElementById('author').value);
+  	fd.append('tags', document.getElementById('tags').value);
+  	fd.append('description', document.getElementById('description').value);
+  	fd.append('category', document.getElementById('category').value);
+
   	xhr.open("POST", "/upload/upload_data");
     xhr.send(fd);
 
@@ -194,7 +246,9 @@ function uploadFile() {
 
 	reader.onload = function(e){
 		var fd = new FormData();
+		var xhr = new XMLHttpRequest();
         var upload = xhr.upload;
+        var processDone = false;
         xhr.addEventListener("load", uploadComplete, false);
         upload.addEventListener('load',function(){
 	        loaded += step;
@@ -205,25 +259,35 @@ function uploadFile() {
 
             if (loaded <= total) {
                     blob = file.slice(loaded, loaded+step);
-                    reader.readAsBinaryString(blob);
+                    reader.readAsArrayBuffer(blob);
             } else {
+            	if (!processDone) {
                     loaded = total;
-                    window.location = window.location.href + "/upload_success"
+                    fd.append('finished', 'true');
+                    fd.append('fileName', fileName);
+                    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+	    			xhr.send(fd);
+	    			processDone = true;
+                } else {
+        //         	setTimeout(function () {
+	       //  			window.location = window.location.href + "/upload_success";
+    				// }, 500);
+                }
             }
 	    },false);
-	    fd.append('blob', e.target.result);
+	    fd.append('blob', base64ArrayBuffer(e.target.result));
 	    fd.append('reading', 'true');
 	    fd.append('fileName', fileName);
 	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
 	    xhr.send(fd);
 
-	    checkUploadSpeed( 1, function ( speed, average ) {
+	    checkUploadSpeed( 10, function ( speed, average ) {
 	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
 	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
 		});
 	};
 	var blob = file.slice(start, step);
-	reader.readAsBinaryString(blob); 
+	reader.readAsArrayBuffer(blob); 
 }
 
 

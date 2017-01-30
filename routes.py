@@ -5,6 +5,8 @@ Routes and views for the bottle application.
 
 from bottle import route, view
 from datetime import datetime
+from azure.storage.blob import AppendBlobService
+append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 
 @route('/')
 @route('/home')
@@ -28,7 +30,9 @@ def upload():
 @view('search')
 def search():
     """Renders the info page."""
+    v = append_blob_service.get_blob_to_bytes('016fa16f-b667-4326-8383-a8b02f0b2c7c')
     return dict(
+        video=v.content,
         title='Search Result',
         year=datetime.now().year
     )
@@ -37,6 +41,7 @@ def search():
 @view('player')
 def player():
     """Renders the info page."""
+
     return dict(
         title='Player',
         year=datetime.now().year
@@ -53,7 +58,7 @@ def upload_success():
 
 @route('/upload/upload_fail')
 @view('upload_fail')
-def upload_success():
+def upload_fail():
     """Renders the info page."""
     return dict(
         title='Upload Success',
