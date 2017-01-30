@@ -113,13 +113,14 @@ def processor(form):
 		max_connections=10
 	)
 	print(content)
+	print(sys.getsizeof(content.content))
 	temp_file_name = media_file_name+'.mp4'
 	temp_file_name = os.path.join('temp', temp_file_name)
 	tf = open(temp_file_name, 'w+b')
 	tf.write(content.content)
 	tf.close()
 	temp_key_file_name = os.path.join('transcripts', media_file_name + '.json')
-	tf = open(temp_file_name, 'w+b')
+	tf = open(temp_key_file_name, 'w+b')
 	tf.write('{}')
 	tf.close()
 
