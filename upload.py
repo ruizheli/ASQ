@@ -10,18 +10,36 @@ import re
 import sys
 import tempfile
 import os
+import logging
 from azure.storage.blob import AppendBlobService
 from pprint import pprint
 from maintest import file_upload
 from multiprocessing import Process, Queue
 
 append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
+logger = logging.getLogger('asq')
+logger.setLevel(logging.DEBUG)
+
+# create file handler which logs even debug messages
+fh = logging.FileHandler('debug.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 @route('/upload/upload_data', method='POST')
 def upload_data():
 	# try:
 	if (request.forms.get('reading') == 'false'):
 		print('creating SQL entry')
+		logger.info('creating SQL entry')
 		title = request.forms.get('title')
 		author = request.forms.get('author')
 		tags = request.forms.get('tags')
@@ -50,11 +68,14 @@ def upload_data():
 		conn.close()
 
 		print(media_file_name)
+		logger.debug(media_file_name)
 
 		append_blob_service.create_blob('media-file', media_file_name)
 		print('finished SQL entry')
+		logger.info('finished SQL entry')
 	elif (request.forms.get('finished') != 'true'):
 		print('loading blob entry')
+		logger.info('loading blob entry')
 		blob = base64.b64decode(request.forms.get('blob'))
 		media_file_name = request.forms.get('fileName') + ''
 
@@ -65,7 +86,9 @@ def upload_data():
 		)
 		print(sys.getsizeof(blob))
 		print('finished blob entry')
+		logger.info('finished blob entry')
 	elif (request.forms.get('finished') == 'true'):
+		logger.info('Got to processor')
 		p = Process(target=processor, args=(request.forms,))
 		p.start()
 	# except UploadError:
@@ -74,6 +97,7 @@ def upload_data():
 
 def processor(form):
 	print(form.get('fileName'))
+	logger.debug('filename: ' + form.get('fileName'))
 	media_file_name = form.get('fileName')
 	if not os.path.exists("temp_index"):
 		os.mkdir("temp_index")

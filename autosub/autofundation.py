@@ -244,7 +244,6 @@ class SpeechRecognizer(object):
                 # [END construct_request]
                 # [START send_request]
                 response = service_request.execute()
-                # print response
                 line = " "
                 if response.has_key('results'):
                     for sentences in response['results']:
