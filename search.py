@@ -2,6 +2,7 @@ from whoosh.qparser import QueryParser
 import whoosh.index as index
 from whoosh.fields import *
 from bottle import route, run
+from updatekeytimemap import update_key_time_map 
 import pymssql
 import pyodbc
 import re
@@ -91,7 +92,7 @@ def get_info(title):
 	thumbnail = "/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/out2.jpg"
 	return (title,tags,education,user,abstract,thumbnail)
 
-def results_html(title):
+def results_html(title, String):
 	fn = title
 	(title,tags,education,user,abstract,thumbnail) = get_info(title)
 	results_html1 = """<article class="row">
@@ -117,7 +118,10 @@ def results_html(title):
 	results_html8 = """</p>
 				</div>
 			</article>"""
-	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn + results_html6 + title + results_html7 + abstract + results_html8
+
+	# print(String)
+	# print(title + "/" + String)
+	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + String + results_html6 + title + results_html7 + abstract + results_html8
 	return results_html
 
 @route('/search/<String:re:((\w+\+)*)?\w+>')
@@ -126,13 +130,16 @@ def searchStr(String):
 	results = ["none"]
 	results_num = 0
 	r_html = ""
+	keys = String.split("+")
 	with ix.searcher() as searcher:
 		query = QueryParser("content", ix.schema).parse(String)
+		print query
 		results = searcher.search(query, limit = 20)
 		results_num = len(results)
 		for i in results:
-			r_html += results_html(i["title"])
+			update_key_time_map(keys,i["title"])
+			r_html += results_html(i["title"], String)
 			r_html += """<hr>"""
-	print "there are " + str(results_num) + "results"
+	print "there are " + str(results_num) + " results"
 	html = html1 + str(results_num) + html2 + String + html3 + r_html + html4 
 	return html
