@@ -47,6 +47,7 @@ def upload_data():
 		category = request.forms.get('category')
 		media_file_name = request.forms.get('fileName')
 		education = request.forms.get('school')
+		course = request.forms.get('course')
 
 		server = 'tcp:asq-file.database.windows.net'
 		database = 'asq-file'
@@ -62,8 +63,8 @@ def upload_data():
 
 		# logics for uploading
 		cursor = conn.cursor()
-		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\')"""
-		cursor.execute(query % (title, author, tags, description, category, media_file_name, education,))
+		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education], [course]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\', N\'%s\')"""
+		cursor.execute(query % (title, author, tags, description, category, media_file_name, education, course, ))
 
 		conn.commit()
 		conn.close()
@@ -104,6 +105,8 @@ def processor(form):
 		os.mkdir("temp_index")
 	if not os.path.exists("temp"):
 		os.mkdir("temp")
+	if not os.path.exists("transcripts"):
+		os.mkdir("transcripts")	
 	content = append_blob_service.get_blob_to_bytes(
 		'media-file',
 		media_file_name,
@@ -115,6 +118,11 @@ def processor(form):
 	tf = open(temp_file_name, 'w+b')
 	tf.write(content.content)
 	tf.close()
+	temp_key_file_name = os.path.join('transcripts', media_file_name + '.json')
+	tf = open(temp_file_name, 'w+b')
+	tf.write('{}')
+	tf.close()
+
 	cwd = os.getcwd()
 	# index_file_name = os.path.join('temp_index', I_FILE_NAME)
 	# index_file = open(index_file_name, 'w+b')

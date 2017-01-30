@@ -9,6 +9,7 @@ import sys
 import routes
 import upload
 import search
+import player
 
 if '--debug' in sys.argv[1:] or 'SERVER_DEBUG' in os.environ:
     # Debug mode will enable more verbose output in the console window.
