@@ -133,6 +133,15 @@ def processor(form):
 	temp_thumbnail = os.path.join('static', 'content', media_file_name.split('.')[0] + '.png')
 	command = ["ffmpeg", "-i", input_file, "-ss", "00:00:03.000", "-vframes", "1", temp_thumbnail]
 	subprocess.check_output(command)
+	append_blob_service.create_blob('thumbnails', media_file_name.split('.')[0])
+	f = open(temp_thumbnail, 'rb')
+	f_binary = f.read()
+	f.close()
+	append_blob_service.append_blob_from_text(
+		'thumbnails',
+		media_file_name.split('.')[0],
+		f_binary
+	)
 
 	cwd = os.getcwd()
 	# index_file_name = os.path.join('temp_index', I_FILE_NAME)

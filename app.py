@@ -12,14 +12,14 @@ import search
 import player
 
 if '--debug' in sys.argv[1:] or 'SERVER_DEBUG' in os.environ:
-    # Debug mode will enable more verbose output in the console window.
-    # It must be set at the beginning of the script.
-    bottle.debug(True)
+	# Debug mode will enable more verbose output in the console window.
+	# It must be set at the beginning of the script.
+	bottle.debug(True)
 
 def wsgi_app():
-    """Returns the application to make available through wfastcgi. This is used
-    when the site is published to Microsoft Azure."""
-    return bottle.default_app()
+	"""Returns the application to make available through wfastcgi. This is used
+	when the site is published to Microsoft Azure."""
+	return bottle.default_app()
 
 if __name__ == '__main__':
 	os.chdir('/var/www/asq')
@@ -37,7 +37,14 @@ if __name__ == '__main__':
 		"""Handler for static files, used with the development server.
 		When running under a production server such as IIS or Apache,
 		the server should be configured to serve the static files."""
-        	return bottle.static_file(filepath, root=STATIC_ROOT)
+ 		return bottle.static_file(filepath, root=STATIC_ROOT)
+
+	@bottle.route('/search/static/<filepath:path>')
+	def server_static(filepath):
+		"""Handler for static files, used with the development server.
+		When running under a production server such as IIS or Apache,
+		the server should be configured to serve the static files."""
+		return bottle.static_file(filepath, root=STATIC_ROOT)
 
     # Starts a local test server.
 	bottle.run(server='wsgiref', host='0.0.0.0', port=80, debug=True)
