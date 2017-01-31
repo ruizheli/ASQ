@@ -239,8 +239,10 @@ function uploadFile() {
 	var start = 0;
   	var xhr = new XMLHttpRequest();
   	var fd = new FormData();
-  	fileName = generateUUID();
+  	fileName = generateUUID() + '.' + file.name.split('.').pop();
   	averageSpeed = 0;
+
+  	// alert(fileName);
 
   	document.getElementById("progress-bar").style.display = "block";
   	document.getElementById("cancel_upload").style.display = "none";
@@ -291,7 +293,7 @@ function uploadFile() {
                 } else {
         //         	setTimeout(function () {
 	       //  			window.location = window.location.href + "/upload_success";
-    				// }, 500);
+    				// }, 2000);
                 }
             }
 	    },false);

@@ -29,7 +29,8 @@ def file_upload(file_pwd, append_blob_service):
 		raise fileNameError('fileNameError')
 	transcript = autosub(file_pwd, format="json")
 	print "Generated data structure: \n"
-	whoosh_indexing(file_name,file_pwd,transcript, append_blob_service)
+	print(file_name_and_type)
+	whoosh_indexing(file_name_and_type,file_pwd,transcript, append_blob_service)
 	return transcript
 
 # def autosubing(file_pwd,transcripts_timed_pwd,file_type):

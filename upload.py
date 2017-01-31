@@ -11,6 +11,7 @@ import sys
 import tempfile
 import os
 import logging
+import subprocess
 from azure.storage.blob import AppendBlobService
 from pprint import pprint
 from maintest import file_upload
@@ -45,7 +46,8 @@ def upload_data():
 		tags = request.forms.get('tags')
 		description = request.forms.get('description')
 		category = request.forms.get('category')
-		media_file_name = request.forms.get('fileName')
+		media_file_name = request.forms.get('fileName').split('.')[0]
+		file_type = request.forms.get('fileName').split('.')[1]
 		education = request.forms.get('school')
 		course = request.forms.get('course')
 
@@ -63,8 +65,8 @@ def upload_data():
 
 		# logics for uploading
 		cursor = conn.cursor()
-		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education], [course]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\', N\'%s\')"""
-		cursor.execute(query % (title, author, tags, description, category, media_file_name, education, course, ))
+		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education], [course], [file_type]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\', N\'%s\', N\'%s\')"""
+		cursor.execute(query % (title, author, tags, description, category, media_file_name, education, course, file_type, ))
 
 		conn.commit()
 		conn.close()
@@ -79,7 +81,7 @@ def upload_data():
 		print('loading blob entry')
 		logger.info('loading blob entry')
 		blob = base64.b64decode(request.forms.get('blob'))
-		media_file_name = request.forms.get('fileName') + ''
+		media_file_name = request.forms.get('fileName').split('.')[0]
 
 		append_blob_service.append_blob_from_text(
 			'media-file',
@@ -107,22 +109,30 @@ def processor(form):
 		os.mkdir("temp")
 	if not os.path.exists("transcripts"):
 		os.mkdir("transcripts")	
+	if not os.path.exists("thumbnail"):
+		os.mkdir("thumbnail")	
 	content = append_blob_service.get_blob_to_bytes(
 		'media-file',
-		media_file_name,
+		media_file_name.split('.')[0],
 		max_connections=10
 	)
 	print(content)
 	print(sys.getsizeof(content.content))
-	temp_file_name = media_file_name+'.mp4'
+	temp_file_name = media_file_name
 	temp_file_name = os.path.join('temp', temp_file_name)
 	tf = open(temp_file_name, 'w+b')
 	tf.write(content.content)
 	tf.close()
-	temp_key_file_name = os.path.join('transcripts', media_file_name + '.json')
+
+	temp_key_file_name = os.path.join('transcripts', media_file_name.split('.')[0] + '.json')
 	tf = open(temp_key_file_name, 'w+b')
 	tf.write('{}')
 	tf.close()
+
+	input_file = temp_file_name
+	temp_thumbnail = os.path.join('static', 'content', media_file_name.split('.')[0] + '.png')
+	command = ["ffmpeg", "-i", input_file, "-ss", "00:00:03.000", "-vframes", "1", temp_thumbnail]
+	subprocess.check_output(command)
 
 	cwd = os.getcwd()
 	# index_file_name = os.path.join('temp_index', I_FILE_NAME)
@@ -134,10 +144,10 @@ def processor(form):
 	# index_file.write(index_content.content)
 	# index_file.close()
 	transcript = file_upload(os.path.join(cwd, temp_file_name), append_blob_service)
-	append_blob_service.create_blob('transcript', media_file_name)
+	append_blob_service.create_blob('transcript', media_file_name.split('.')[0])
 	append_blob_service.append_blob_from_text(
 		'transcript',
-		media_file_name,
+		media_file_name.split('.')[0],
 		transcript
 	)
 	os.remove(os.path.join(cwd, temp_file_name))

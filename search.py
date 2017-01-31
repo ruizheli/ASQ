@@ -6,6 +6,7 @@ from updatekeytimemap import update_key_time_map
 import pymssql
 import pyodbc
 import re
+import os
 
 html1 = """<!DOCTYPE html>
 <html>
@@ -64,6 +65,7 @@ html4 = """
 </html>"""
 
 def get_info(title):
+	fn = title
 	server = 'tcp:asq-file.database.windows.net'
 	database = 'asq-file'
 	username = 'ruizheli@asq-file'
@@ -89,12 +91,13 @@ def get_info(title):
 	education = str(result[8]) 
 	user = str(result[1]) 
 	abstract = str(result[3]) 
-	thumbnail = "/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/out2.jpg"
-	return (title,tags,education,user,abstract,thumbnail)
+	thumbnail = os.path.join('static', 'content', fn+'.png')
+	file_type = str(result[10]) 
+	return (title,tags,education,user,abstract,thumbnail,file_type)
 
 def results_html(title, String):
 	fn = title
-	(title,tags,education,user,abstract,thumbnail) = get_info(title)
+	(title,tags,education,user,abstract,thumbnail,file_type) = get_info(title)
 	results_html1 = """<article class="row">
 				<div class="col-xs-12 col-sm-12 col-md-3">
 					<a href="#" class="thumbnail"><img src=\""""
@@ -121,7 +124,7 @@ def results_html(title, String):
 
 	# print(String)
 	# print(title + "/" + String)
-	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + String + results_html6 + title + results_html7 + abstract + results_html8
+	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + file_type.replace(" ", "") + "/" + String + results_html6 + title + results_html7 + abstract + results_html8
 	return results_html
 
 @route('/search/<String:re:((\w+\+)*)?\w+>')
@@ -138,7 +141,7 @@ def searchStr(String):
 		results_num = len(results)
 		for i in results:
 			update_key_time_map(keys,i["title"])
-			r_html += results_html(i["title"], String)
+			r_html += results_html(i["title"].split('.')[0], String)
 			r_html += """<hr>"""
 	print "there are " + str(results_num) + " results"
 	html = html1 + str(results_num) + html2 + String + html3 + r_html + html4 

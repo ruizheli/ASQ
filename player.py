@@ -101,7 +101,7 @@ html10 = """</p>
 </html>"""
 
 def get_files(title):
-	key_time_map_file = open(os.path.join('transcripts', title + '.json'),'r')
+	key_time_map_file = open(os.path.join('transcripts', title.split('.')[0] + '.json'),'r')
 	key_time_map = json.load(key_time_map_file)
 	key_time_map_file.close()
 
@@ -121,11 +121,11 @@ def get_files(title):
 		os.mkdir("temp")
 	content = append_blob_service.get_blob_to_bytes(
 		'media-file',
-		title,
+		title.split('.')[0],
 		max_connections=10
 	)
 	print(content)
-	temp_file_name = title+'.mp4'
+	temp_file_name = title
 	video_pwd = os.path.join('static', 'content', temp_file_name)
 	tf = open(video_pwd, 'w+b')
 	tf.write(content.content)
@@ -135,8 +135,8 @@ def get_files(title):
 	# logics for uploading
 	cursor = conn.cursor()
 	query = """SELECT * FROM [dbo].[asq_file] WHERE file_name=\'%s\'"""
-	print(query % (str(title),))
-	cursor.execute(query % (str(title),))
+	print(query % (str(title.split('.')[0]),))
+	cursor.execute(query % (str(title.split('.')[0]),))
 	result = cursor.next()
 
 	title = str(result[0]) 
@@ -145,17 +145,17 @@ def get_files(title):
 	user = str(result[1]) 
 	abstract = str(result[3]) 
 	category = str(result[4]) 
-	course = str(result[4]) 
+	course = str(result[9]) 
 
 	return (title, key_time_map,education,user,course,abstract,category, video_pwd)
 
-@route('/player/<title:re:[\w\-]+>/<keys:re:((\w+\+)*)?\w+>')
-def player(title,keys):
+@route('/player/<title:re:[\w\-]+>/<type:re:[\w\-]+>/<keys:re:((\w+\+)*)?\w+>')
+def player(title, type, keys):
 	s1 = """<li class="jump"><a href="#" onclick="jumpToTime("""
 	s2 = """)">"""
 	s3 = """</a></li>"""
 	s_html = ""
-	(title, key_time_map,education,user,course,abstract,category,video_pwd) = get_files(title)
+	(title, key_time_map,education,user,course,abstract,category,video_pwd) = get_files(title + '.' + type)
 	keys = keys.split("+")
 	for k in keys:
 		for i in key_time_map[k]:

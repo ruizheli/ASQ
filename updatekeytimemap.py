@@ -22,8 +22,9 @@ def get_files(title):
 	return (transcript_timed,key_time_map)
 
 def get_times(keys, title):
-	(transcript_timed,key_time_map) = get_files(title)
+	(transcript_timed,key_time_map) = get_files(title.split('.')[0])
 	# key_ranges_map = {}
+	print('get_times' + title)
 	keys = list(map(lambda x: x.lower(), keys))
 	# back_up_keys = keys
 	for k in keys:
@@ -43,7 +44,7 @@ def get_times(keys, title):
 	# 	ranges = key_ranges_map[k]
 	# 	time = autosub2(file_pwd,ranges,k)
 	# 	key_time_map.update({k: time})
-	key_time_map_path = os.path.join('transcripts', title + '.json')
+	key_time_map_path = os.path.join('transcripts', title.split('.')[0] + '.json')
 	key_time_map_file = open(key_time_map_path,'wb')
 	key_time_map_file.write(json.dumps(key_time_map))
 	key_time_map_file.close()

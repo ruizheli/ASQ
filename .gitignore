@@ -17,6 +17,8 @@ env/
 virtual/
 resources/
 virtualenv/
+temp/
+transcripts/
 .DS_Store
 
 # Installer logs
