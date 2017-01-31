@@ -6,6 +6,7 @@ from updatekeytimemap import update_key_time_map
 import pymssql
 import pyodbc
 import re
+import os
 
 html1 = """<!DOCTYPE html>
 <html>
@@ -22,14 +23,14 @@ html1 = """<!DOCTYPE html>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8">
-					<h1><a href="/home" class="logo">Answer Students Questions</a></h1>
+					<h1><a href="/home" class="logo">Parrot</a></h1>
 				</div>
 				<div class="col-md-4">
 					<div class="searchBox">
 						<div class="input-group">
-							<input type="text" class="form-control" placeholder="What do you want to learn?">
+							<input type="text" class="form-control" id="search" placeholder="What do you want to learn?">
 							<span class="input-group-btn">
-								<button class="btn btn-default" type="button">Go</button>
+								<button class="btn btn-default" id="go-btn" type="button" onclick="go_search();">Go</button>
 							</span>
 						</div>
 					</div>
@@ -52,18 +53,19 @@ html4 = """
 		<footer>
 			<div class="container">
 				<h3>About</h3>
-				<p>Answer Students Questions is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
-				<p> We are building a system which collects audio/video recordings from teachers and let students look up with keywords based on the actual verbal content. ASQ will also match each audio/video file with the syllabus or text book of this course to estimate the possible inputs that students would enter in order to increase the accuracy of voice recognition.</p>
-			</div>  
+				<p>Parrot is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
+				<p>Parrot provides students with an efficient and streamlined way to refresh their memory with important concepts. Students can search for and upload lecture recordings, search any keyword or concept in the recordings, or discover new content to satisfy their intellectual needs. Parrot will take the student to that moment in the lecture with clinical precision. </p>			</div>  
 		</footer>
 	</div>
 
+	<script src="/static/scripts/main.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 
 </html>"""
 
 def get_info(title):
+	fn = title
 	server = 'tcp:asq-file.database.windows.net'
 	database = 'asq-file'
 	username = 'ruizheli@asq-file'
@@ -74,7 +76,7 @@ def get_info(title):
 	# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 	
 	# pymssql part, for testing only
-	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
+	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
 
 	print(title)
 	# logics for uploading
@@ -89,12 +91,13 @@ def get_info(title):
 	education = str(result[8]) 
 	user = str(result[1]) 
 	abstract = str(result[3]) 
-	thumbnail = "/Users/ruoxili/GoogleDrive/ASQ/ASQ/transcripts/out2.jpg"
-	return (title,tags,education,user,abstract,thumbnail)
+	thumbnail = os.path.join('static', 'content', fn+'.png')
+	file_type = str(result[10]) 
+	return (title,tags,education,user,abstract,thumbnail,file_type)
 
 def results_html(title, String):
 	fn = title
-	(title,tags,education,user,abstract,thumbnail) = get_info(title)
+	(title,tags,education,user,abstract,thumbnail,file_type) = get_info(title)
 	results_html1 = """<article class="row">
 				<div class="col-xs-12 col-sm-12 col-md-3">
 					<a href="#" class="thumbnail"><img src=\""""
@@ -121,7 +124,7 @@ def results_html(title, String):
 
 	# print(String)
 	# print(title + "/" + String)
-	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + String + results_html6 + title + results_html7 + abstract + results_html8
+	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + file_type.replace(" ", "") + "/" + String + results_html6 + title + results_html7 + abstract + results_html8
 	return results_html
 
 @route('/search/<String:re:((\w+\+)*)?\w+>')
@@ -138,7 +141,7 @@ def searchStr(String):
 		results_num = len(results)
 		for i in results:
 			update_key_time_map(keys,i["title"])
-			r_html += results_html(i["title"], String)
+			r_html += results_html(i["title"].split('.')[0], String)
 			r_html += """<hr>"""
 	print "there are " + str(results_num) + " results"
 	html = html1 + str(results_num) + html2 + String + html3 + r_html + html4 

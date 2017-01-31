@@ -1,6 +1,24 @@
 var tags;
 var averageSpeed = 0;
 
+//search
+document.getElementById("search")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+        document.getElementById("go-btn").click();
+    }
+});
+
+function go_upload() {
+  window.location = "/upload";
+}
+
+function go_search() {
+  var key = document.getElementById('search').value;
+  window.location = "/search/"+key;
+}
+
 //Progress Bar
 var progress = document.querySelector('.percent');
 
@@ -221,8 +239,10 @@ function uploadFile() {
 	var start = 0;
   	var xhr = new XMLHttpRequest();
   	var fd = new FormData();
-  	fileName = generateUUID();
+  	fileName = generateUUID() + '.' + file.name.split('.').pop();
   	averageSpeed = 0;
+
+  	// alert(fileName);
 
   	document.getElementById("progress-bar").style.display = "block";
   	document.getElementById("cancel_upload").style.display = "none";
@@ -273,7 +293,7 @@ function uploadFile() {
                 } else {
         //         	setTimeout(function () {
 	       //  			window.location = window.location.href + "/upload_success";
-    				// }, 500);
+    				// }, 2000);
                 }
             }
 	    },false);

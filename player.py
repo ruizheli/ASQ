@@ -22,14 +22,14 @@ html2 = """</title>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-8">
-					<h1><a href="/home" class="logo">Answer Students Questions</a></h1>
+					<h1><a href="/home" class="logo">Parrot</a></h1>
 				</div>
 				<div class="col-md-4">
 					<div class="searchBox">
 						<div class="input-group">
-							<input type="text" class="form-control" placeholder="What do you want to learn?">
+							<input type="text" class="form-control" id="search" placeholder="What do you want to learn?">
 							<span class="input-group-btn">
-								<button class="btn btn-default" type="button">Go</button>
+								<button class="btn btn-default" id="go-btn" type="button" onclick="go_search();">Go</button>
 							</span>
 						</div>
 					</div>
@@ -89,9 +89,8 @@ html10 = """</p>
 		<footer>
 			<div class="container">
 				<h3>About</h3>
-				<p>Answer Students Questions is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
-				<p> We are building a system which collects audio/video recordings from teachers and let students look up with keywords based on the actual verbal content. ASQ will also match each audio/video file with the syllabus or text book of this course to estimate the possible inputs that students would enter in order to increase the accuracy of voice recognition.</p>
-			</div>  
+				<p>Parrot is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
+<p>Parrot provides students with an efficient and streamlined way to refresh their memory with important concepts. Students can search for and upload lecture recordings, search any keyword or concept in the recordings, or discover new content to satisfy their intellectual needs. Parrot will take the student to that moment in the lecture with clinical precision. </p>			</div>  
 		</footer>
 	</div>
 
@@ -102,7 +101,7 @@ html10 = """</p>
 </html>"""
 
 def get_files(title):
-	key_time_map_file = open(os.path.join('transcripts', title + '.json'),'r')
+	key_time_map_file = open(os.path.join('transcripts', title.split('.')[0] + '.json'),'r')
 	key_time_map = json.load(key_time_map_file)
 	key_time_map_file.close()
 
@@ -116,17 +115,17 @@ def get_files(title):
 	# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
 	
 	# pymssql part, for testing only
-	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file')
+	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
 
 	if not os.path.exists("temp"):
 		os.mkdir("temp")
 	content = append_blob_service.get_blob_to_bytes(
 		'media-file',
-		title,
+		title.split('.')[0],
 		max_connections=10
 	)
 	print(content)
-	temp_file_name = title+'.mp4'
+	temp_file_name = title
 	video_pwd = os.path.join('static', 'content', temp_file_name)
 	tf = open(video_pwd, 'w+b')
 	tf.write(content.content)
@@ -136,8 +135,8 @@ def get_files(title):
 	# logics for uploading
 	cursor = conn.cursor()
 	query = """SELECT * FROM [dbo].[asq_file] WHERE file_name=\'%s\'"""
-	print(query % (str(title),))
-	cursor.execute(query % (str(title),))
+	print(query % (str(title.split('.')[0]),))
+	cursor.execute(query % (str(title.split('.')[0]),))
 	result = cursor.next()
 
 	title = str(result[0]) 
@@ -146,17 +145,17 @@ def get_files(title):
 	user = str(result[1]) 
 	abstract = str(result[3]) 
 	category = str(result[4]) 
-	course = str(result[4]) 
+	course = str(result[9]) 
 
 	return (title, key_time_map,education,user,course,abstract,category, video_pwd)
 
-@route('/player/<title:re:[\w\-]+>/<keys:re:((\w+\+)*)?\w+>')
-def player(title,keys):
+@route('/player/<title:re:[\w\-]+>/<type:re:[\w\-]+>/<keys:re:((\w+\+)*)?\w+>')
+def player(title, type, keys):
 	s1 = """<li class="jump"><a href="#" onclick="jumpToTime("""
 	s2 = """)">"""
 	s3 = """</a></li>"""
 	s_html = ""
-	(title, key_time_map,education,user,course,abstract,category,video_pwd) = get_files(title)
+	(title, key_time_map,education,user,course,abstract,category,video_pwd) = get_files(title + '.' + type)
 	keys = keys.split("+")
 	for k in keys:
 		for i in key_time_map[k]:
