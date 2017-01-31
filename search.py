@@ -3,10 +3,13 @@ import whoosh.index as index
 from whoosh.fields import *
 from bottle import route, run
 from updatekeytimemap import update_key_time_map 
+from azure.storage.blob import AppendBlobService
 import pymssql
 import pyodbc
 import re
 import os
+
+append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 
 html1 = """<!DOCTYPE html>
 <html>
@@ -91,7 +94,18 @@ def get_info(title):
 	education = str(result[8]) 
 	user = str(result[1]) 
 	abstract = str(result[3]) 
+
+	content = append_blob_service.get_blob_to_bytes(
+		'thumbnails',
+		fn,
+		max_connections=10
+	)
+
 	thumbnail = os.path.join('static', 'content', fn+'.png')
+	tf = open(thumbnail, 'w+b')
+	tf.write(content.content)
+	tf.close()
+
 	file_type = str(result[10]) 
 	return (title,tags,education,user,abstract,thumbnail,file_type)
 
