@@ -141,7 +141,7 @@ def results_html(title, String):
 	results_html = results_html1 + thumbnail + results_html2 + tags + results_html3 + education + results_html4 + user + results_html5 + fn +  "/" + file_type.replace(" ", "") + "/" + String + results_html6 + title + results_html7 + abstract + results_html8
 	return results_html
 
-@route('/search/<String:re:((\w+\+)*)?\w+>')
+@route('/search/<String:re:([\w+\+]*)?\w+>')
 def searchStr(String):
 	ix = index.open_dir("temp_index")
 	results = ["none"]
@@ -158,5 +158,5 @@ def searchStr(String):
 			r_html += results_html(i["title"].split('.')[0], String)
 			r_html += """<hr>"""
 	print "there are " + str(results_num) + " results"
-	html = html1 + str(results_num) + html2 + String + html3 + r_html + html4 
+	html = html1 + str(results_num) + html2 + String.replace('+', ' ') + html3 + r_html + html4 
 	return html
