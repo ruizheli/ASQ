@@ -1,24 +1,22 @@
+document.getElementById("search")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+        document.getElementById("go-btn").click();
+    }
+});
 
-var links = document.querySelectorAll('.jump');
-var time_table = [3,6,13,23,39,69];
-var player = document.getElementById("video");
-
-if (links.length != time_table.length){
-	alert("Time table doesn't match the concept table");
+function go_upload() {
+	window.location = "/upload";
 }
 
+function go_search() {
+	var key = document.getElementById('search').value;
+	window.location = "/search/"+key;
+}
+
+var player = document.getElementById("video");
 function jumpToTime(time){
 	player.currentTime = time;
 	player.play();
 }
-
-// for (var i = 0; i < links.length; i++) {
-// 	var element = links[i];
-// 	element.addEventListener('click', function(){
-// 		jumpToTime(time_table[i]);
-// 	});
-// }
-
-
-
-
