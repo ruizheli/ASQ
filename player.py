@@ -159,7 +159,10 @@ def player(title, type, keys):
 	keys = keys.split("+")
 	for k in keys:
 		for i in key_time_map[k]:
-			s = s1 + str(int(i[0])) +s2 + k + s3
+			m, s = divmod(i[0], 60)
+			h, m = divmod(m, 60)
+			time = "%d:%02d:%02d" % (h, m, s)
+			s = s1 + str(int(i[0])) +s2 + k + " (" + time + ")" + s3
 			s_html += s
 	html = html1 + title + html2 + title + html3 + s_html + html4 + user + html5 + course + html6 + education + html7 + category + html8 + "/" + video_pwd + html9 +abstract +html10
 	return html

@@ -12,5 +12,6 @@ function go_upload() {
 
 function go_search() {
 	var key = document.getElementById('search').value;
+	key = key.split(' ').join('+');
 	window.location = "/search/"+key;
 }
