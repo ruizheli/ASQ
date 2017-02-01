@@ -47,6 +47,7 @@ def upload_data():
 		description = request.forms.get('description')
 		category = request.forms.get('category')
 		media_file_name = request.forms.get('fileName').split('.')[0]
+		print(request.forms.get('fileName'))
 		file_type = request.forms.get('fileName').split('.')[1]
 		education = request.forms.get('school')
 		course = request.forms.get('course')
