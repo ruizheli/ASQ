@@ -39,68 +39,78 @@ logger.addHandler(ch)
 def upload_data():
 	# try:
 	if (request.forms.get('reading') == 'false'):
-		print('creating SQL entry')
-		logger.info('creating SQL entry')
-		title = request.forms.get('title')
-		author = request.forms.get('author')
-		tags = request.forms.get('tags')
-		description = request.forms.get('description')
-		category = request.forms.get('category')
-		media_file_name = request.forms.get('fileName').split('.')[0]
-		print(request.forms.get('fileName'))
-		file_type = request.forms.get('fileName').split('.')[1]
-		education = request.forms.get('school')
-		course = request.forms.get('course')
-
-		server = 'tcp:asq-file.database.windows.net'
-		database = 'asq-file'
-		username = 'ruizheli@asq-file'
-		password = 'Fzj990418.'
-		driver= '{ODBC Driver 13 for SQL Server}'
-
-		# pyodbc part, for deploying only
-		# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
-		
-		# pymssql part, for testing only
-		conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
-
-		# logics for uploading
-		cursor = conn.cursor()
-		query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education], [course], [file_type]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\', N\'%s\', N\'%s\')"""
-		cursor.execute(query % (title, author, tags, description, category, media_file_name, education, course, file_type, ))
-
-		conn.commit()
-		conn.close()
-
-		print(media_file_name)
-		logger.debug(media_file_name)
-
-		append_blob_service.create_blob('media-file', media_file_name)
-		print('finished SQL entry')
-		logger.info('finished SQL entry')
+		p = Process(target=SQLLoader, args=(request.forms,))
+		p.start()
 	elif (request.forms.get('finished') != 'true'):
-		print('loading blob entry')
-		logger.info('loading blob entry')
-		blob = base64.b64decode(request.forms.get('blob'))
-		media_file_name = request.forms.get('fileName').split('.')[0]
-
-		append_blob_service.append_blob_from_text(
-			'media-file',
-			media_file_name,
-			blob
-		)
-		print(sys.getsizeof(blob))
-		print('finished blob entry')
-		logger.info('finished blob entry')
+		p = Process(target=blobLoader, args=(request.forms,))
+		p.start()
 	elif (request.forms.get('finished') == 'true'):
-		logger.info('Got to processor')
-		p = Process(target=processor, args=(request.forms,))
+		p = Process(target=fileProcessor, args=(request.forms,))
 		p.start()
 	# except UploadError:
 		# print('upload error')
 		# return("upload_fail")
 
-def processor(form):
+def SQLLoader(form) :
+	print('creating SQL entry')
+	logger.info('creating SQL entry')
+	title = request.forms.get('title')
+	author = request.forms.get('author')
+	tags = request.forms.get('tags')
+	description = request.forms.get('description')
+	category = request.forms.get('category')
+	media_file_name = request.forms.get('fileName').split('.')[0]
+	print(request.forms.get('fileName'))
+	file_type = request.forms.get('fileName').split('.')[1]
+	education = request.forms.get('school')
+	course = request.forms.get('course')
+
+	if (title.startswith('test_')) :
+		media_file_name = 'test_' + media_file_name
+
+	server = 'tcp:asq-file.database.windows.net'
+	database = 'asq-file'
+	username = 'ruizheli@asq-file'
+	password = 'Fzj990418.'
+	driver= '{ODBC Driver 13 for SQL Server}'
+
+	# pyodbc part, for deploying only
+	# conn = pyodbc.connect('DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password)
+	
+	# pymssql part, for testing only
+	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
+
+	# logics for uploading
+	cursor = conn.cursor()
+	query = """INSERT INTO [dbo].[asq_file] ([title], [author], [tags], [description], [subject], [format], [file_name], [education], [course], [file_type]) VALUES (N\'%s\', N\'%s\', N\'%s\',N\'%s\', N\'%s\', N\'video\', N\'%s\', N\'%s\', N\'%s\', N\'%s\')"""
+	cursor.execute(query % (title, author, tags, description, category, media_file_name, education, course, file_type, ))
+
+	conn.commit()
+	conn.close()
+
+	print(media_file_name)
+	logger.debug(media_file_name)
+
+	append_blob_service.create_blob('media-file', media_file_name)
+	print('finished SQL entry')
+	logger.info('finished SQL entry')
+
+def blobLoader(form) :
+	print('loading blob entry')
+	logger.info('loading blob entry')
+	blob = base64.b64decode(request.forms.get('blob'))
+	media_file_name = request.forms.get('fileName').split('.')[0]
+
+	append_blob_service.append_blob_from_text(
+		'media-file',
+		media_file_name,
+		blob
+	)
+	print(sys.getsizeof(blob))
+	print('finished blob entry')
+	logger.info('finished blob entry')
+
+def fileProcessor(form) :
 	print(form.get('fileName'))
 	logger.debug('filename: ' + form.get('fileName'))
 	media_file_name = form.get('fileName')
@@ -162,3 +172,4 @@ def processor(form):
 	)
 	os.remove(os.path.join(cwd, temp_file_name))
 	# os.remove(os.path.join(cwd, 'temp_index', I_FILE_NAME))
+

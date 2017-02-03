@@ -104,20 +104,20 @@ function generateUUID() {
 //Validate Form
 function validateForm() {
 
-    // var author = document.forms["upload_form"]["author"].value.trim();
-    // var title = document.forms["upload_form"]["title"].value.trim();
-    // var category = document.forms["upload_form"]["category"].value.trim();
-    // var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
-    // var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
+    var author = document.forms["upload_form"]["author"].value.trim();
+    var title = document.forms["upload_form"]["title"].value.trim();
+    var category = document.forms["upload_form"]["category"].value.trim();
+    var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
+    var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
 
-    // if (tags == "" && tags_input != ""){
-    // 	tags = tags_input;
-    // }
+    if (tags == "" && tags_input != ""){
+    	tags = tags_input;
+    }
 
-    // if (author == "" || title == "" || category == "" || tags == "") {
-    //     alert("All fields marked with * are required");
-    //     return false;
-    // }
+    if (author == "" || title == "" || category == "" || tags == "") {
+        alert("All fields marked with * are required");
+        return false;
+    }
 
     return uploadFile();
 }

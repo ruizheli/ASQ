@@ -19,6 +19,7 @@ resources/
 virtualenv/
 temp/
 transcripts/
+temp_index/
 .DS_Store
 
 # Installer logs
