@@ -204,113 +204,113 @@ function checkUploadSpeed( iterations, update ) {
 };
 
 
-function fileSelected() {
-  	var file = document.getElementById('files').files[0];
+// function fileSelected() {
+//   	var file = document.getElementById('files').files[0];
 	
-	if (file) {
-		var fileSize = 0;
-    	if (file.size > 1024 * 1024)
-      		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-    	else
-      		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+// 	if (file) {
+// 		var fileSize = 0;
+//     	if (file.size > 1024 * 1024)
+//       		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+//     	else
+//       		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
         
-      	console.log("name: "+file.name);
-      	console.log(fileSize);
+//       	console.log("name: "+file.name);
+//       	console.log(fileSize);
 
-    	document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + file.name;
-    	document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + fileSize;
-    	document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + file.type;
-  	}
-}
+//     	document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + file.name;
+//     	document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + fileSize;
+//     	document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + file.type;
+//   	}
+// }
 
 
-function uploadFile() {
+// function uploadFile() {
 
-	var file = document.getElementById('files').files[0];
+// 	var file = document.getElementById('files').files[0];
 
-	if (!file) {
-		alert("File not uploaded!")
-		return;
-	}
+// 	if (!file) {
+// 		alert("File not uploaded!")
+// 		return;
+// 	}
 	
-	var loaded = 0;
-	var step = 512*1024;
-	var total = file.size;
-	var start = 0;
-  	var xhr = new XMLHttpRequest();
-  	var fd = new FormData();
-  	fileName = generateUUID() + '.' + file.name.split('.').pop();
-  	averageSpeed = 0;
+// 	var loaded = 0;
+// 	var step = 512*1024;
+// 	var total = file.size;
+// 	var start = 0;
+// 	var xhr = new XMLHttpRequest();
+// 	var fd = new FormData();
+// 	fileName = generateUUID() + '.' + file.name.split('.').pop();
+// 	averageSpeed = 0;
 
-  	// alert(fileName);
+// 	// alert(fileName);
 
-  	document.getElementById("progress-bar").style.display = "block";
-  	document.getElementById("cancel_upload").style.display = "none";
-	document.getElementById("submit_button").style.display = "none";
-	document.getElementById("form_data").style.display = "none";
-	document.getElementById("insturction").style.display = "block";
+// 	document.getElementById("progress-bar").style.display = "block";
+// 	document.getElementById("cancel_upload").style.display = "none";
+// 	document.getElementById("submit_button").style.display = "none";
+// 	document.getElementById("form_data").style.display = "none";
+// 	document.getElementById("insturction").style.display = "block";
 
-  	fd.append('fileName', fileName);
-  	fd.append('reading', 'false');
-  	fd.append('title', document.getElementById('title').value);
-  	fd.append('author', document.getElementById('author').value);
-  	fd.append('tags', document.getElementById('tags').value);
-  	fd.append('description', document.getElementById('description').value);
-  	fd.append('category', document.getElementById('category').value);
-  	fd.append('school', document.getElementById('school').value);
-  	fd.append('course', document.getElementById('course').value);
+// 	fd.append('fileName', fileName);
+// 	fd.append('reading', 'false');
+// 	fd.append('title', document.getElementById('title').value);
+// 	fd.append('author', document.getElementById('author').value);
+// 	fd.append('tags', document.getElementById('tags').value);
+// 	fd.append('description', document.getElementById('description').value);
+// 	fd.append('category', document.getElementById('category').value);
+// 	fd.append('school', document.getElementById('school').value);
+// 	fd.append('course', document.getElementById('course').value);
 
-  	xhr.open("POST", "/upload/upload_data");
-    xhr.send(fd);
+// 	xhr.open("POST", "/upload/upload_data");
+//   xhr.send(fd);
 
-  	var reader = new FileReader();
-	var xhr = new XMLHttpRequest();
+// 	var reader = new FileReader();
+// 	var xhr = new XMLHttpRequest();
 
-	reader.onload = function(e){
-		var fd = new FormData();
-		var xhr = new XMLHttpRequest();
-        var upload = xhr.upload;
-        var processDone = false;
-        xhr.addEventListener("load", uploadComplete, false);
-        upload.addEventListener('load',function(){
-	        loaded += step;
-	        var percentComplete = Math.round((loaded / total) * 100);
+// 	reader.onload = function(e){
+// 		var fd = new FormData();
+// 		var xhr = new XMLHttpRequest();
+//         var upload = xhr.upload;
+//         var processDone = false;
+//         xhr.addEventListener("load", uploadComplete, false);
+//         upload.addEventListener('load',function(){
+// 	        loaded += step;
+// 	        var percentComplete = Math.round((loaded / total) * 100);
 
-	        progress.style.width = percentComplete.toString() + '%';
-			progress.textContent = percentComplete.toString() + '%';
+// 	        progress.style.width = percentComplete.toString() + '%';
+//     			progress.textContent = percentComplete.toString() + '%';
 
-            if (loaded <= total) {
-                    blob = file.slice(loaded, loaded+step);
-                    reader.readAsArrayBuffer(blob);
-            } else {
-            	if (!processDone) {
-                    loaded = total;
-                    fd.append('finished', 'true');
-                    fd.append('fileName', fileName);
-                    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
-	    			xhr.send(fd);
-	    			processDone = true;
-                } else {
-        //         	setTimeout(function () {
-	       //  			window.location = window.location.href + "/upload_success";
-    				// }, 2000);
-                }
-            }
-	    },false);
-	    fd.append('blob', base64ArrayBuffer(e.target.result));
-	    fd.append('reading', 'true');
-	    fd.append('fileName', fileName);
-	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
-	    xhr.send(fd);
+//             if (loaded <= total) {
+//                     blob = file.slice(loaded, loaded+step);
+//                     reader.readAsArrayBuffer(blob);
+//             } else {
+//             	if (!processDone) {
+//                     loaded = total;
+//                     fd.append('finished', 'true');
+//                     fd.append('fileName', fileName);
+//                     xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+// 	    			xhr.send(fd);
+// 	    			processDone = true;
+//                 } else {
+//         //         	setTimeout(function () {
+// 	       //  			window.location = window.location.href + "/upload_success";
+//     				// }, 2000);
+//                 }
+//             }
+// 	    },false);
+// 	    fd.append('blob', base64ArrayBuffer(e.target.result));
+// 	    fd.append('reading', 'true');
+// 	    fd.append('fileName', fileName);
+// 	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+// 	    xhr.send(fd);
 
-	    checkUploadSpeed( 10, function ( speed, average ) {
-	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
-	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
-		});
-	};
-	var blob = file.slice(start, step);
-	reader.readAsArrayBuffer(blob); 
-}
+// 	    checkUploadSpeed( 10, function ( speed, average ) {
+// 	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
+// 	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
+// 		});
+// 	};
+// 	var blob = file.slice(start, step);
+// 	reader.readAsArrayBuffer(blob); 
+// }
 
 
 function uploadProgress(evt) {
@@ -466,7 +466,6 @@ var submitUri = null;
 var bytesUploaded = 0;
  
 $(document).ready(function () {
-    $("#output").hide();
     $("#files").bind('change', handleFileSelect);
     if (window.File && window.FileReader && window.FileList && window.Blob) {
         // Great success! All the File APIs are supported.
@@ -524,7 +523,8 @@ reader.onloadend = function (evt) {
                 console.log(status);
                 bytesUploaded += requestData.length;
                 var percentComplete = ((parseFloat(bytesUploaded) / parseFloat(selectedFile.size)) * 100).toFixed(2);
-                $("#fileUploadProgress").text(percentComplete + " %");
+                progress.style.width = percentComplete.toString() + '%';
+                progress.textContent = percentComplete.toString() + '%';
                 uploadFileInBlocks();
             },
             error: function(xhr, desc, err) {
