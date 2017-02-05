@@ -1,6 +1,5 @@
 # NOTE: Currently pymssql fails on Azure, while pyodbc fails locally. USE pyodbc FOR DEPLOYING!!!
 from bottle import route, run, template, view, redirect, post, request
-import pyodbc
 import pymssql
 import pymongo
 import base64
@@ -38,15 +37,26 @@ logger.addHandler(ch)
 @route('/upload/upload_data', method='POST')
 def upload_data():
 	# try:
-	if (request.forms.get('reading') == 'false'):
-		p = Process(target=SQLLoader, args=(request.forms,))
-		p.start()
-	elif (request.forms.get('finished') != 'true'):
-		p = Process(target=blobLoader, args=(request.forms,))
-		p.start()
-	elif (request.forms.get('finished') == 'true'):
+	if (request.forms.get('geturi') == 'true') :
+		with open('containerSASToken.txt', 'r') as myfile:
+			data = myfile.read().replace('\n', '')
+		return data
+	elif (request.forms.get('finished') != 'true') :
+		SQLLoader(request.forms)
+	elif (request.forms.get('finished') == 'true') :
 		p = Process(target=fileProcessor, args=(request.forms,))
 		p.start()
+
+
+
+	# 	p = Process(target=SQLLoader, args=(request.forms,))
+	# 	p.start()
+	# elif (request.forms.get('finished') != 'true'):
+	# 	p = Process(target=blobLoader, args=(request.forms,))
+	# 	p.start()
+	# elif (request.forms.get('finished') == 'true'):
+	# 	p = Process(target=fileProcessor, args=(request.forms,))
+	# 	p.start()
 	# except UploadError:
 		# print('upload error')
 		# return("upload_fail")
@@ -64,9 +74,6 @@ def SQLLoader(form) :
 	file_type = request.forms.get('fileName').split('.')[1]
 	education = request.forms.get('school')
 	course = request.forms.get('course')
-
-	if (title.startswith('test_')) :
-		media_file_name = 'test_' + media_file_name
 
 	server = 'tcp:asq-file.database.windows.net'
 	database = 'asq-file'
@@ -91,7 +98,6 @@ def SQLLoader(form) :
 	print(media_file_name)
 	logger.debug(media_file_name)
 
-	append_blob_service.create_blob('media-file', media_file_name)
 	print('finished SQL entry')
 	logger.info('finished SQL entry')
 
