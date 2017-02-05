@@ -47,8 +47,6 @@ def upload_data():
 		p = Process(target=fileProcessor, args=(request.forms,))
 		p.start()
 
-
-
 	# 	p = Process(target=SQLLoader, args=(request.forms,))
 	# 	p.start()
 	# elif (request.forms.get('finished') != 'true'):

@@ -3,6 +3,7 @@ import json
 import pymssql
 from azure.storage.blob import AppendBlobService
 import os
+from multiprocessing import Process, Queue
 
 append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 
@@ -116,21 +117,12 @@ def get_files(title):
 	
 	# pymssql part, for testing only
 	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
-
-	if not os.path.exists("temp"):
-		os.mkdir("temp")
-	content = append_blob_service.get_blob_to_bytes(
-		'media-file',
-		title.split('.')[0],
-		max_connections=10
-	)
-	print(content)
 	temp_file_name = title
 	video_pwd = os.path.join('static', 'content', temp_file_name)
-	tf = open(video_pwd, 'w+b')
-	tf.write(content.content)
-	tf.close()
 
+	p = Process(target=load_video, args=(title, video_pwd,))
+	p.start()
+	
 	print(title)
 	# logics for uploading
 	cursor = conn.cursor()
@@ -167,3 +159,16 @@ def player(title, type, keys):
 	html = html1 + title + html2 + title + html3 + s_html + html4 + user + html5 + course + html6 + education + html7 + category + html8 + "/" + video_pwd + html9 +abstract +html10
 	return html
 	
+def load_video(title, video_pwd):
+	if not os.path.exists("temp"):
+		os.mkdir("temp")
+	content = append_blob_service.get_blob_to_bytes(
+		'media-file',
+		title.split('.')[0],
+		max_connections=10
+	)
+	print(content)
+	
+	tf = open(video_pwd, 'w+b')
+	tf.write(content.content)
+	tf.close()
