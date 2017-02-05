@@ -104,20 +104,20 @@ function generateUUID() {
 //Validate Form
 function validateForm() {
 
-    var author = document.forms["upload_form"]["author"].value.trim();
-    var title = document.forms["upload_form"]["title"].value.trim();
-    var category = document.forms["upload_form"]["category"].value.trim();
-    var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
-    var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
+    // var author = document.forms["upload_form"]["author"].value.trim();
+    // var title = document.forms["upload_form"]["title"].value.trim();
+    // var category = document.forms["upload_form"]["category"].value.trim();
+    // var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
+    // var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
 
-    if (tags == "" && tags_input != ""){
-    	tags = tags_input;
-    }
+    // if (tags == "" && tags_input != ""){
+    // 	tags = tags_input;
+    // }
 
-    if (author == "" || title == "" || category == "" || tags == "") {
-        alert("All fields marked with * are required");
-        return false;
-    }
+    // if (author == "" || title == "" || category == "" || tags == "") {
+    //     alert("All fields marked with * are required");
+    //     return false;
+    // }
 
     return uploadFile();
 }
@@ -202,27 +202,6 @@ function checkUploadSpeed( iterations, update ) {
         return result;
     };
 };
-
-
-// function fileSelected() {
-//   	var file = document.getElementById('files').files[0];
-	
-// 	if (file) {
-// 		var fileSize = 0;
-//     	if (file.size > 1024 * 1024)
-//       		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-//     	else
-//       		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
-        
-//       	console.log("name: "+file.name);
-//       	console.log(fileSize);
-
-//     	document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + file.name;
-//     	document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + fileSize;
-//     	document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + file.type;
-//   	}
-// }
-
 
 // function uploadFile() {
 
@@ -464,7 +443,9 @@ var blockIds = new Array();
 var blockIdPrefix = "block-";
 var submitUri = null;
 var bytesUploaded = 0;
- 
+var fileName = '';
+var averageSpeed = 0;
+
 $(document).ready(function () {
     $("#files").bind('change', handleFileSelect);
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -479,12 +460,25 @@ function handleFileSelect(e) {
     maxBlockSize = 256 * 1024;
     currentFilePointer = 0;
     totalBytesRemaining = 0;
-    var files = e.target.files;
-    selectedFile = files[0];
+    selectedFile = document.getElementById('files').files[0];
     // $("#output").show();
-    $("#fileName").text(selectedFile.name);
-    $("#fileSize").text(selectedFile.size);
-    $("#fileType").text(selectedFile.type);
+    document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + selectedFile.name;
+    document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + selectedFile.size;
+    document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + selectedFile.type;
+
+    uploadhint = document.getElementsByClassName("upload_hint");
+    for (var i = 0; i < uploadhint.length; i++) {
+      uploadhint[i].style.display = 'none';
+    }
+
+    uploadshow = document.getElementsByClassName("upload_show");
+    for (var i = 0; i < uploadshow.length; i++) {
+      uploadshow[i].style.display = 'block';
+    }
+
+    progress.style.width = '0%';
+    progress.textContent = '0%';
+
     var fileSize = selectedFile.size;
     if (fileSize < maxBlockSize) {
         maxBlockSize = fileSize;
@@ -497,10 +491,48 @@ function handleFileSelect(e) {
         numberOfBlocks = parseInt(fileSize / maxBlockSize, 10) + 1;
     }
     console.log("total blocks = " + numberOfBlocks);
-    var baseUrl = $("#sasUrl").val();
-    var indexOfQueryStart = baseUrl.indexOf("?");
-    submitUri = baseUrl.substring(0, indexOfQueryStart) + '/' + selectedFile.name + baseUrl.substring(indexOfQueryStart);
-    console.log(submitUri);
+
+    var fd = new FormData();
+    var xhr = new XMLHttpRequest();
+    UUID = generateUUID();
+    fileName = UUID + '.' + selectedFile.name.split('.').pop();
+
+    fd.append('geturi', 'true');
+    xhr.open("POST", "/upload/upload_data");
+    xhr.addEventListener("load", function(evt) {
+      var baseUrl = evt.target.responseText;
+      var indexOfQueryStart = baseUrl.indexOf("?");
+      submitUri = baseUrl.substring(0, indexOfQueryStart) + '/' + UUID + baseUrl.substring(indexOfQueryStart);
+      console.log(submitUri);
+    }, false);
+    xhr.send(fd);
+}
+
+function uploadFile() {
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+
+    averageSpeed = 0;
+    document.getElementById("progress-bar").style.display = "block";
+    document.getElementById("cancel_upload").style.display = "none";
+    document.getElementById("submit_button").style.display = "none";
+    document.getElementById("form_data").style.display = "none";
+    document.getElementById("insturction").style.display = "block";
+
+    fd.append('fileName', fileName);
+    fd.append('reading', 'false');
+    fd.append('title', document.getElementById('title').value);
+    fd.append('author', document.getElementById('author').value);
+    fd.append('tags', document.getElementById('tags').value);
+    fd.append('description', document.getElementById('description').value);
+    fd.append('category', document.getElementById('category').value);
+    fd.append('school', document.getElementById('school').value);
+    fd.append('course', document.getElementById('course').value);
+
+    xhr.open("POST", "/upload/upload_data");
+    xhr.send(fd);
+
+    uploadFileInBlocks();
 }
 
 var reader = new FileReader();
@@ -515,8 +547,7 @@ reader.onloadend = function (evt) {
             data: requestData,
             processData: false,
             beforeSend: function(xhr) {
-                xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
-                xhr.setRequestHeader('Content-Length', requestData.length);
+                xhr.setRequestHeader('x-ms-blob-type', 'AppendBlob');
             },
             success: function (data, status) {
                 console.log(data);
@@ -548,6 +579,10 @@ function uploadFileInBlocks() {
         if (totalBytesRemaining < maxBlockSize) {
             maxBlockSize = totalBytesRemaining;
         }
+        // checkUploadSpeed( 10, function ( speed, average ) {
+        //     document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
+        //     document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round((totalBytesRemaining / 1024) / averageSpeed) + 's';
+        // });
     } else {
         commitBlockList();
     }
@@ -568,7 +603,6 @@ function commitBlockList() {
         data: requestBody,
         beforeSend: function (xhr) {
             xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type);
-            xhr.setRequestHeader('Content-Length', requestBody.length);
         },
         success: function (data, status) {
             console.log(data);
@@ -580,6 +614,16 @@ function commitBlockList() {
         }
     });
 
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+
+    fd.append('finished', 'true');
+    fd.append('fileName', fileName);
+    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+    xhr.send(fd);
+    setTimeout(function () {
+        window.location = window.location.href + "/upload_success";
+    }, 500);
 }
 function pad(number, length) {
     var str = '' + number;

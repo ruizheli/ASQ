@@ -1,7 +1,11 @@
+//css_reference Microsoft.WindowsAzure.Configuration.dll;
+//css_reference Microsoft.WindowsAzure.Storage.dll
+using System;
 using System.IO;
-using WindowsAzure;
-using WindowsAzure.Storage;
-using WindowsAzure.Storage.Blob;
+using System.Text;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 public class sas_creater
 {

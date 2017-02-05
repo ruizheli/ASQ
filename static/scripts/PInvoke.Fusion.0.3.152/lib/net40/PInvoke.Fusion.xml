@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PInvoke.Fusion</name>
+    </assembly>
+    <members>
+        <member name="T:PInvoke.Fusion">
+            <summary>
+            Exported functions from the Fusion.dll Windows library
+            that are available to Desktop apps only.
+            </summary>
+            <content>
+            Methods and nested types that are not strictly P/Invokes but provide
+            a slightly higher level of functionality to ease calling into native code.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.AssemblyCacheInstallFlags"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.AssemblyInfoFlags"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.FusionInstallReferenceFlags"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.FUSION_INSTALL_REFERENCE"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.IAssemblyCache"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.IAssemblyCacheItem"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.QueryAssemblyInfoFlags"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.ASSEMBLY_INFO"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.UninstallAssemblyFlags"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref="T:PInvoke.Fusion.UninstallDisposition"/> nested type.
+            </content>
+            <summary>
+            Exported functions from the Fusion.dll Windows library
+            that are available to Desktop apps only.
+            </summary>
+            <content>
+            Methods and nested types that are not strictly P/Invokes but provide
+            a slightly higher level of functionality to ease calling into native code.
+            </content>
+            <content>
+            Contains the <see cref = "T:PInvoke.Fusion.FUSION_INSTALL_REFERENCE"/> nested type.
+            </content>
+            <content>
+            Contains the <see cref = "T:PInvoke.Fusion.ASSEMBLY_INFO"/> nested type.
+            </content>
+        </member>
+        <member name="M:PInvoke.Fusion.CreateAssemblyCache(PInvoke.Fusion.IAssemblyCache@,System.Int32)">
+            <summary>
+            Gets a pointer to a new <see cref="T:PInvoke.Fusion.IAssemblyCache"/> instance that represents the global assembly cache.
+            </summary>
+            <param name="ppAsmCache">The returned <see cref="T:PInvoke.Fusion.IAssemblyCache"/> pointer.</param>
+            <param name="dwReserved">Reserved for future extensibility. dwReserved must be 0 (zero).</param>
+            <returns>An <see cref="T:PInvoke.HResult"/>.</returns>
+        </member>
+        <member name="T:PInvoke.Fusion.AssemblyInfoFlags">
+            <summary>
+            Flags that can be specified in <see cref="F:PInvoke.Fusion.ASSEMBLY_INFO.dwAssemblyFlags"/>.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.AssemblyInfoFlags.None">
+            <summary>
+            No flags.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.AssemblyInfoFlags.ASSEMBLYINFO_FLAG_INSTALLED">
+            <summary>
+            Indicates that the assembly is installed. The current version of the .NET Framework always sets dwAssemblyFlags to this value.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.AssemblyInfoFlags.ASSEMBLYINFO_FLAG_PAYLOADRESIDENT">
+            <summary>
+            Indicates that the assembly is a payload resident. The current version of the .NET Framework never sets dwAssemblyFlags to this value.
+            </summary>
+        </member>
+        <member name="T:PInvoke.Fusion.FusionInstallReferenceFlags">
+            <summary>
+            Flags that may be specified by <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.dwFlags"/>.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FusionInstallReferenceFlags.None">
+            <summary>
+            No flags.
+            </summary>
+        </member>
+        <member name="T:PInvoke.Fusion.FUSION_INSTALL_REFERENCE">
+            <summary>
+            Represents a reference that an application makes to an assembly that the application has installed in the global assembly cache.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_MSI_GUID">
+            <summary>
+            The assembly is referenced by an application that was installed using the Microsoft Windows Installer. The szIdentifier field is set to MSI, and the szNonCanonicalData field is set to Windows Installer. This scheme is used for Windows side-by-side assemblies.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_UNINSTALL_SUBKEY_GUID">
+            <summary>
+            The assembly is referenced by an application that appears in the Add/Remove Programs interface. The szIdentifier field provides the token that registers the application with the Add/Remove Programs interface.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_FILEPATH_GUID">
+            <summary>
+            The assembly is referenced by an application that is represented by a file in the file system. The szIdentifier field provides the path to this file.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_OPAQUE_STRING_GUID">
+            <summary>
+            The assembly is referenced by an application that is represented only by an opaque string. The szIdentifier field provides this opaque string. The global assembly cache does not check for the existence of opaque references when you remove this value.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_OSINSTALL_GUID">
+            <summary>
+            This value is reserved.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.cbSize">
+            <summary>
+            The size of the structure in bytes.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.dwFlags">
+            <summary>
+            Reserved for future extensibility. This value must be 0 (zero).
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.guidScheme">
+            <summary>
+            The entity that adds the reference.
+            This field can have one of the following values:
+            <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_MSI_GUID"/>,
+            <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_FILEPATH_GUID"/>,
+            <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_OPAQUE_STRING_GUID"/>,
+            <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_OSINSTALL_GUID"/>,
+            <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.FUSION_REFCOUNT_UNINSTALL_SUBKEY_GUID"/>
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.szIdentifier">
+            <summary>
+            A unique string that identifies the application that installed the assembly in the global assembly cache. Its value depends upon the value of the <see cref="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.guidScheme"/> field.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.szNonCannonicalData">
+            <summary>
+            A string that is understood only by the entity that adds the reference. The global assembly cache stores this string, but does not use it.
+            </summary>
+        </member>
+        <member name="P:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.szIdentifier_IntPtr">
+            <summary>
+            A unique string that identifies the application that installed the assembly in the global assembly cache. Its value depends upon the value of the <see cref = "F:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.guidScheme"/> field.
+            </summary>
+        </member>
+        <member name="P:PInvoke.Fusion.FUSION_INSTALL_REFERENCE.szNonCannonicalData_IntPtr">
+            <summary>
+            A string that is understood only by the entity that adds the reference. The global assembly cache stores this string, but does not use it.
+            </summary>
+        </member>
+        <member name="T:PInvoke.Fusion.IAssemblyCache">
+            <summary>
+            Represents the global assembly cache for use by the fusion technology.
+            </summary>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCache.UninstallAssembly(PInvoke.Fusion.UninstallAssemblyFlags,System.String,PInvoke.Fusion.FUSION_INSTALL_REFERENCE*,PInvoke.Fusion.UninstallDisposition*)">
+            <summary>
+            Uninstalls the specified assembly from the global assembly cache.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pszAssemblyName">The name of the assembly to uninstall.</param>
+            <param name="pRefData">A <see cref="T:PInvoke.Fusion.FUSION_INSTALL_REFERENCE"/> structure that contains the installation data for the assembly.</param>
+            <param name="pulDisposition">One of the disposition values defined in Fusion.idl.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/></returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCache.QueryAssemblyInfo(PInvoke.Fusion.QueryAssemblyInfoFlags,System.String,PInvoke.Fusion.ASSEMBLY_INFO*)">
+            <summary>
+            Gets the requested data about the specified assembly.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pszAssemblyName">The name of the assembly for which data will be retrieved.</param>
+            <param name="pAsmInfo">An <see cref="T:PInvoke.Fusion.ASSEMBLY_INFO"/> structure that contains data about the assembly.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/></returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCache.CreateAssemblyCacheItem(PInvoke.Fusion.AssemblyCacheInstallFlags,System.Object,PInvoke.Fusion.IAssemblyCacheItem@,System.String)">
+            <summary>
+            Gets a reference to a new <see cref="T:PInvoke.Fusion.IAssemblyCacheItem"/> object.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pvReserved">Reserved for future extensibility. <paramref name="pvReserved"/> must be a null reference.</param>
+            <param name="ppAsmItem">The returned <see cref="T:PInvoke.Fusion.IAssemblyCacheItem"/> pointer</param>
+            <param name="pszAssemblyName">Uncanonicalized, comma-separated name=value pairs. Optional.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/></returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCache.CreateAssemblyScavenger(System.Object@)">
+            <summary>
+            Reserved for internal use by the fusion technology.
+            </summary>
+            <param name="ppUnkReserved">The returned IUnknown pointer</param>
+            <returns>An <see cref="T:PInvoke.HResult"/></returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCache.InstallAssembly(PInvoke.Fusion.AssemblyCacheInstallFlags,System.String,PInvoke.Fusion.FUSION_INSTALL_REFERENCE*)">
+            <summary>
+            Installs the specified assembly in the global assembly cache.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pszManifestFilePath">The path to the manifest for the assembly to install.</param>
+            <param name="pRefData">A <see cref="T:PInvoke.Fusion.FUSION_INSTALL_REFERENCE"/> structure that contains data for the installation.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/></returns>
+        </member>
+        <member name="T:PInvoke.Fusion.IAssemblyCacheItem">
+            <summary>
+            Represents a single assembly in the global assembly cache.
+            </summary>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCacheItem.CreateStream(System.UInt32,System.String,System.UInt32,System.UInt32,mscoree.IStream@,System.UInt64*)">
+            <summary>
+            Creates a stream with the specified name and format.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pszStreamName">The name of the stream to be created.</param>
+            <param name="dwFormat">The format of the file to be streamed.</param>
+            <param name="dwFormatFlags">Format-specific flags defined in Fusion.idl.</param>
+            <param name="ppIStream">A pointer to the address of the returned <see cref="T:mscoree.IStream"/> instance.</param>
+            <param name="puliMaxSize">The maximum size of the stream referenced by <paramref name="ppIStream"/>.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/>.</returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCacheItem.Commit(System.UInt32,System.UInt32*)">
+            <summary>
+            Commits the cached assembly reference to memory.
+            </summary>
+            <param name="dwFlags">Flags defined in Fusion.idl.</param>
+            <param name="pulDisposition">A value that indicates the result of the operation.</param>
+            <returns>An <see cref="T:PInvoke.HResult"/>.</returns>
+        </member>
+        <member name="M:PInvoke.Fusion.IAssemblyCacheItem.AbortItem">
+            <summary>
+            Allows the assembly in the global assembly cache to perform cleanup operations before it is released.
+            </summary>
+            <returns>An <see cref="T:PInvoke.HResult"/>.</returns>
+        </member>
+        <member name="T:PInvoke.Fusion.QueryAssemblyInfoFlags">
+            <summary>
+            The flags that may be passed to the <see cref="M:PInvoke.Fusion.IAssemblyCache.QueryAssemblyInfo(PInvoke.Fusion.QueryAssemblyInfoFlags,System.String,PInvoke.Fusion.ASSEMBLY_INFO*)"/> method.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.QueryAssemblyInfoFlags.None">
+            <summary>
+            No flags.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.QueryAssemblyInfoFlags.QUERYASMINFO_FLAG_VALIDATE">
+            <summary>
+            Validates the assembly files in the side-by-side assembly store against the assembly manifest. This includes the verification of the assembly's hash and strong name signature.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.QueryAssemblyInfoFlags.QUERYASMINFO_FLAG_GETSIZE">
+            <summary>
+            Returns the size of all files in the assembly.
+            </summary>
+        </member>
+        <member name="T:PInvoke.Fusion.ASSEMBLY_INFO">
+            <summary>
+            Contains information about an assembly that is registered in the global assembly cache.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.ASSEMBLY_INFO.cbAssemblyInfo">
+            <summary>
+            The size, in bytes, of the structure. This field is reserved for future extensibility.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.ASSEMBLY_INFO.dwAssemblyFlags">
+            <summary>
+            Flags that indicate installation details about the assembly.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.ASSEMBLY_INFO.uliAssemblySizeInKB">
+            <summary>
+            The total size, in kilobytes, of the files that the assembly contains.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.ASSEMBLY_INFO.pszCurrentAssemblyPathBuf">
+            <summary>
+            A pointer to a string buffer that holds the current path to the manifest file. The path must end with a null character.
+            </summary>
+        </member>
+        <member name="F:PInvoke.Fusion.ASSEMBLY_INFO.cchBuf">
+            <summary>
+            The number of wide characters, including the null terminator, that <see cref="F:PInvoke.Fusion.ASSEMBLY_INFO.pszCurrentAssemblyPathBuf"/> contains.
+            </summary>
+        </member>
+        <member name="M:PInvoke.Fusion.ASSEMBLY_INFO.Create">
+            <summary>
+            Initializes a new instance of the <see cref="T:PInvoke.Fusion.ASSEMBLY_INFO"/> struct
+            with the <see cref="F:PInvoke.Fusion.ASSEMBLY_INFO.cbAssemblyInfo"/> field initialized.
+            </summary>
+            <returns>The newly initialized struct.</returns>
+        </member>
+        <member name="P:PInvoke.Fusion.ASSEMBLY_INFO.pszCurrentAssemblyPathBuf_IntPtr">
+            <summary>
+            A pointer to a string buffer that holds the current path to the manifest file. The path must end with a null character.
+            </summary>
+        </member>
+        <member name="T:PInvoke.Fusion.UninstallDisposition">
+            <summary>
+            Enumerates values that may be returned by the <see cref="M:PInvoke.Fusion.IAssemblyCache.UninstallAssembly(PInvoke.Fusion.UninstallAssemblyFlags,System.String,PInvoke.Fusion.FUSION_INSTALL_REFERENCE*,PInvoke.Fusion.UninstallDisposition*)"/> function.
+            </summary>
+        </member>
+    </members>
+</doc>

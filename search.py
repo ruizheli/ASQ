@@ -5,7 +5,6 @@ from bottle import route, run
 from updatekeytimemap import update_key_time_map 
 from azure.storage.blob import AppendBlobService
 import pymssql
-import pyodbc
 import re
 import os
 
