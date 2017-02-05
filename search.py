@@ -41,7 +41,7 @@ html1 = """<!DOCTYPE html>
 		</div>
 	</header>
 	
-	<div class="container">
+	<div class="container" id="result">
 		<h2>Search Results</h2>
 		<p><strong class="text-danger">"""
 html2 = """</strong> results were found for the search for <strong class="text-danger">"""

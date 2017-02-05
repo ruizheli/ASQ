@@ -19,17 +19,22 @@ header {
 }
 
 .footer {
-    bottom:0;
-    width:100%;
-	padding-top: 20px;
-	padding-bottom: 30px;
-	background-color: #99979c;
+	position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin-top: -180px;
+    height: 180px;
+    clear: both;
+    background-color: #efefef;
 }
 
 #upload_section {
 	width: 80%;
 	margin-left: auto;
 	margin-right: auto;
+	overflow: auto;
+	padding-bottom: 180px; /* must be same height as the footer */
 }
 
 #upload_section .container {
