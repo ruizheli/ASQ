@@ -40,3 +40,12 @@ input[type="checkbox"].input-validation-error {
 .validation-summary-valid {
     display: none;
 }
+
+.footer {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    padding-top: 20px;
+    padding-bottom: 30px;
+    background-color: #99979c;
+}

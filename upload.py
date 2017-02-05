@@ -1,6 +1,5 @@
 # NOTE: Currently pymssql fails on Azure, while pyodbc fails locally. USE pyodbc FOR DEPLOYING!!!
 from bottle import route, run, template, view, redirect, post, request
-import pyodbc
 import pymssql
 import pymongo
 import base64

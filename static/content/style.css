@@ -26,6 +26,9 @@ header {
 }
 
 .footer {
+	position:absolute;
+    bottom:0;
+    width:100%;
 	padding-top: 20px;
 	padding-bottom: 30px;
 	background-color: #99979c;
@@ -33,4 +36,9 @@ header {
 
 .break {
 	padding-top: 50px;
+}
+
+#search {
+    width: 100%;
+    margin: auto;
 }
