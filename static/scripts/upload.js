@@ -26,7 +26,7 @@ var progress = document.querySelector('.percent');
 var dropZone = document.getElementById('drop_zone');
 dropZone.addEventListener('dragover', handleDragOver, false);
 dropZone.addEventListener('drop', handleFileDropped, false);
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
+// document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 //Prevent Drag Over
 window.addEventListener("dragover",function(e){
@@ -104,20 +104,20 @@ function generateUUID() {
 //Validate Form
 function validateForm() {
 
-    var author = document.forms["upload_form"]["author"].value.trim();
-    var title = document.forms["upload_form"]["title"].value.trim();
-    var category = document.forms["upload_form"]["category"].value.trim();
-    var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
-    var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
+    // var author = document.forms["upload_form"]["author"].value.trim();
+    // var title = document.forms["upload_form"]["title"].value.trim();
+    // var category = document.forms["upload_form"]["category"].value.trim();
+    // var tags = document.forms["upload_form"]["tags-hidden"].value.trim();
+    // var tags_input = document.forms["upload_form"]["tags-input"].value.trim();
 
-    if (tags == "" && tags_input != ""){
-    	tags = tags_input;
-    }
+    // if (tags == "" && tags_input != ""){
+    // 	tags = tags_input;
+    // }
 
-    if (author == "" || title == "" || category == "" || tags == "") {
-        alert("All fields marked with * are required");
-        return false;
-    }
+    // if (author == "" || title == "" || category == "" || tags == "") {
+    //     alert("All fields marked with * are required");
+    //     return false;
+    // }
 
     return uploadFile();
 }
@@ -203,114 +203,93 @@ function checkUploadSpeed( iterations, update ) {
     };
 };
 
+// function uploadFile() {
 
-function fileSelected() {
-  	var file = document.getElementById('files').files[0];
+// 	var file = document.getElementById('files').files[0];
+
+// 	if (!file) {
+// 		alert("File not uploaded!")
+// 		return;
+// 	}
 	
-	if (file) {
-		var fileSize = 0;
-    	if (file.size > 1024 * 1024)
-      		fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-    	else
-      		fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
-        
-      	console.log("name: "+file.name);
-      	console.log(fileSize);
+// 	var loaded = 0;
+// 	var step = 512*1024;
+// 	var total = file.size;
+// 	var start = 0;
+// 	var xhr = new XMLHttpRequest();
+// 	var fd = new FormData();
+// 	fileName = generateUUID() + '.' + file.name.split('.').pop();
+// 	averageSpeed = 0;
 
-    	document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + file.name;
-    	document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + fileSize;
-    	document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + file.type;
-  	}
-}
+// 	// alert(fileName);
 
+// 	document.getElementById("progress-bar").style.display = "block";
+// 	document.getElementById("cancel_upload").style.display = "none";
+// 	document.getElementById("submit_button").style.display = "none";
+// 	document.getElementById("form_data").style.display = "none";
+// 	document.getElementById("insturction").style.display = "block";
 
-function uploadFile() {
+// 	fd.append('fileName', fileName);
+// 	fd.append('reading', 'false');
+// 	fd.append('title', document.getElementById('title').value);
+// 	fd.append('author', document.getElementById('author').value);
+// 	fd.append('tags', document.getElementById('tags').value);
+// 	fd.append('description', document.getElementById('description').value);
+// 	fd.append('category', document.getElementById('category').value);
+// 	fd.append('school', document.getElementById('school').value);
+// 	fd.append('course', document.getElementById('course').value);
 
-	var file = document.getElementById('files').files[0];
+// 	xhr.open("POST", "/upload/upload_data");
+//   xhr.send(fd);
 
-	if (!file) {
-		alert("File not uploaded!")
-		return;
-	}
-	
-	var loaded = 0;
-	var step = 512*1024;
-	var total = file.size;
-	var start = 0;
-  	var xhr = new XMLHttpRequest();
-  	var fd = new FormData();
-  	fileName = generateUUID() + '.' + file.name.split('.').pop();
-  	averageSpeed = 0;
+// 	var reader = new FileReader();
+// 	var xhr = new XMLHttpRequest();
 
-  	// alert(fileName);
+// 	reader.onload = function(e){
+// 		var fd = new FormData();
+// 		var xhr = new XMLHttpRequest();
+//         var upload = xhr.upload;
+//         var processDone = false;
+//         xhr.addEventListener("load", uploadComplete, false);
+//         upload.addEventListener('load',function(){
+// 	        loaded += step;
+// 	        var percentComplete = Math.round((loaded / total) * 100);
 
-  	document.getElementById("progress-bar").style.display = "block";
-  	document.getElementById("cancel_upload").style.display = "none";
-	document.getElementById("submit_button").style.display = "none";
-	document.getElementById("form_data").style.display = "none";
-	document.getElementById("insturction").style.display = "block";
+// 	        progress.style.width = percentComplete.toString() + '%';
+//     			progress.textContent = percentComplete.toString() + '%';
 
-  	fd.append('fileName', fileName);
-  	fd.append('reading', 'false');
-  	fd.append('title', document.getElementById('title').value);
-  	fd.append('author', document.getElementById('author').value);
-  	fd.append('tags', document.getElementById('tags').value);
-  	fd.append('description', document.getElementById('description').value);
-  	fd.append('category', document.getElementById('category').value);
-  	fd.append('school', document.getElementById('school').value);
-  	fd.append('course', document.getElementById('course').value);
+//             if (loaded <= total) {
+//                     blob = file.slice(loaded, loaded+step);
+//                     reader.readAsArrayBuffer(blob);
+//             } else {
+//             	if (!processDone) {
+//                     loaded = total;
+//                     fd.append('finished', 'true');
+//                     fd.append('fileName', fileName);
+//                     xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+// 	    			xhr.send(fd);
+// 	    			processDone = true;
+//                 } else {
+//         //         	setTimeout(function () {
+// 	       //  			window.location = window.location.href + "/upload_success";
+//     				// }, 2000);
+//                 }
+//             }
+// 	    },false);
+// 	    fd.append('blob', base64ArrayBuffer(e.target.result));
+// 	    fd.append('reading', 'true');
+// 	    fd.append('fileName', fileName);
+// 	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+// 	    xhr.send(fd);
 
-  	xhr.open("POST", "/upload/upload_data");
-    xhr.send(fd);
-
-  	var reader = new FileReader();
-	var xhr = new XMLHttpRequest();
-
-	reader.onload = function(e){
-		var fd = new FormData();
-		var xhr = new XMLHttpRequest();
-        var upload = xhr.upload;
-        var processDone = false;
-        xhr.addEventListener("load", uploadComplete, false);
-        upload.addEventListener('load',function(){
-	        loaded += step;
-	        var percentComplete = Math.round((loaded / total) * 100);
-
-	        progress.style.width = percentComplete.toString() + '%';
-			progress.textContent = percentComplete.toString() + '%';
-
-            if (loaded <= total) {
-                    blob = file.slice(loaded, loaded+step);
-                    reader.readAsArrayBuffer(blob);
-            } else {
-            	if (!processDone) {
-                    loaded = total;
-                    fd.append('finished', 'true');
-                    fd.append('fileName', fileName);
-                    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
-	    			xhr.send(fd);
-	    			processDone = true;
-                } else {
-        //         	setTimeout(function () {
-	       //  			window.location = window.location.href + "/upload_success";
-    				// }, 2000);
-                }
-            }
-	    },false);
-	    fd.append('blob', base64ArrayBuffer(e.target.result));
-	    fd.append('reading', 'true');
-	    fd.append('fileName', fileName);
-	    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
-	    xhr.send(fd);
-
-	    checkUploadSpeed( 10, function ( speed, average ) {
-	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
-	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
-		});
-	};
-	var blob = file.slice(start, step);
-	reader.readAsArrayBuffer(blob); 
-}
+// 	    checkUploadSpeed( 10, function ( speed, average ) {
+// 	    	document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
+// 	    	document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round(((total-loaded) / 1024) / averageSpeed) + 's';
+// 		});
+// 	};
+// 	var blob = file.slice(start, step);
+// 	reader.readAsArrayBuffer(blob); 
+// }
 
 
 function uploadProgress(evt) {
@@ -381,28 +360,28 @@ function errorHandler(evt) {
 
 
 // Select file
-function handleFileSelect(evt) {
+// function handleFileSelect(evt) {
 
-	uploadhint = document.getElementsByClassName("upload_hint");
-	for (var i = 0; i < uploadhint.length; i++) {
-		uploadhint[i].style.display = 'none';
-	}
+// 	uploadhint = document.getElementsByClassName("upload_hint");
+// 	for (var i = 0; i < uploadhint.length; i++) {
+// 		uploadhint[i].style.display = 'none';
+// 	}
 
-	uploadshow = document.getElementsByClassName("upload_show");
-	for (var i = 0; i < uploadshow.length; i++) {
-		uploadshow[i].style.display = 'block';
-	}
+// 	uploadshow = document.getElementsByClassName("upload_show");
+// 	for (var i = 0; i < uploadshow.length; i++) {
+// 		uploadshow[i].style.display = 'block';
+// 	}
 
-	progress.style.width = '0%';
-	progress.textContent = '0%';
+// 	progress.style.width = '0%';
+// 	progress.textContent = '0%';
 
-	reader = new FileReader();
-	reader.onerror = errorHandler;
+// 	reader = new FileReader();
+// 	reader.onerror = errorHandler;
 
-	// Read in the image file as a binary string.
-	reader.readAsBinaryString(evt.target.files[0]);
+// 	// Read in the image file as a binary string.
+// 	reader.readAsBinaryString(evt.target.files[0]);
 
-}
+// }
 
 
 
@@ -451,3 +430,205 @@ function uploadFailed(evt) {
 function uploadCanceled(evt) {
   	alert("The upload has been canceled by the user or the browser dropped the connection.");
 } 
+
+
+// Testing new upload method
+
+var maxBlockSize = 256 * 1024;//Each file will be split in 256 KB.
+var numberOfBlocks = 1;
+var selectedFile = null;
+var currentFilePointer = 0;
+var totalBytesRemaining = 0;
+var blockIds = new Array();
+var blockIdPrefix = "block-";
+var submitUri = null;
+var bytesUploaded = 0;
+var fileName = '';
+var averageSpeed = 0;
+
+$(document).ready(function () {
+    $("#files").bind('change', handleFileSelect);
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        // Great success! All the File APIs are supported.
+    } else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+});
+ 
+//Read the file and find out how many blocks we would need to split it.
+function handleFileSelect(e) {
+    maxBlockSize = 256 * 1024;
+    currentFilePointer = 0;
+    totalBytesRemaining = 0;
+    selectedFile = document.getElementById('files').files[0];
+    // $("#output").show();
+    document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + selectedFile.name;
+    document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + selectedFile.size;
+    document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + selectedFile.type;
+
+    uploadhint = document.getElementsByClassName("upload_hint");
+    for (var i = 0; i < uploadhint.length; i++) {
+      uploadhint[i].style.display = 'none';
+    }
+
+    uploadshow = document.getElementsByClassName("upload_show");
+    for (var i = 0; i < uploadshow.length; i++) {
+      uploadshow[i].style.display = 'block';
+    }
+
+    progress.style.width = '0%';
+    progress.textContent = '0%';
+
+    var fileSize = selectedFile.size;
+    if (fileSize < maxBlockSize) {
+        maxBlockSize = fileSize;
+        console.log("max block size = " + maxBlockSize);
+    }
+    totalBytesRemaining = fileSize;
+    if (fileSize % maxBlockSize == 0) {
+        numberOfBlocks = fileSize / maxBlockSize;
+    } else {
+        numberOfBlocks = parseInt(fileSize / maxBlockSize, 10) + 1;
+    }
+    console.log("total blocks = " + numberOfBlocks);
+
+    var fd = new FormData();
+    var xhr = new XMLHttpRequest();
+    UUID = generateUUID();
+    fileName = UUID + '.' + selectedFile.name.split('.').pop();
+
+    fd.append('geturi', 'true');
+    xhr.open("POST", "/upload/upload_data");
+    xhr.addEventListener("load", function(evt) {
+      var baseUrl = evt.target.responseText;
+      var indexOfQueryStart = baseUrl.indexOf("?");
+      submitUri = baseUrl.substring(0, indexOfQueryStart) + '/' + UUID + baseUrl.substring(indexOfQueryStart);
+      console.log(submitUri);
+    }, false);
+    xhr.send(fd);
+}
+
+function uploadFile() {
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+
+    averageSpeed = 0;
+    document.getElementById("progress-bar").style.display = "block";
+    document.getElementById("cancel_upload").style.display = "none";
+    document.getElementById("submit_button").style.display = "none";
+    document.getElementById("form_data").style.display = "none";
+    document.getElementById("insturction").style.display = "block";
+
+    fd.append('fileName', fileName);
+    fd.append('reading', 'false');
+    fd.append('title', document.getElementById('title').value);
+    fd.append('author', document.getElementById('author').value);
+    fd.append('tags', document.getElementById('tags').value);
+    fd.append('description', document.getElementById('description').value);
+    fd.append('category', document.getElementById('category').value);
+    fd.append('school', document.getElementById('school').value);
+    fd.append('course', document.getElementById('course').value);
+
+    xhr.open("POST", "/upload/upload_data");
+    xhr.send(fd);
+
+    uploadFileInBlocks();
+}
+
+var reader = new FileReader();
+
+reader.onloadend = function (evt) {
+    if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+        var uri = submitUri + '&comp=block&blockid=' + blockIds[blockIds.length - 1];
+        var requestData = new Uint8Array(evt.target.result);
+        $.ajax({
+            url: uri,
+            type: "PUT",
+            data: requestData,
+            processData: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('x-ms-blob-type', 'AppendBlob');
+            },
+            success: function (data, status) {
+                console.log(data);
+                console.log(status);
+                bytesUploaded += requestData.length;
+                var percentComplete = ((parseFloat(bytesUploaded) / parseFloat(selectedFile.size)) * 100).toFixed(2);
+                progress.style.width = percentComplete.toString() + '%';
+                progress.textContent = percentComplete.toString() + '%';
+                uploadFileInBlocks();
+            },
+            error: function(xhr, desc, err) {
+                console.log(desc);
+                console.log(err);
+            }
+        });
+    }
+};
+
+function uploadFileInBlocks() {
+    if (totalBytesRemaining > 0) {
+        console.log("current file pointer = " + currentFilePointer + " bytes read = " + maxBlockSize);
+        var fileContent = selectedFile.slice(currentFilePointer, currentFilePointer + maxBlockSize);
+        var blockId = blockIdPrefix + pad(blockIds.length, 6);
+        console.log("block id = " + blockId);
+        blockIds.push(btoa(blockId));
+        reader.readAsArrayBuffer(fileContent);
+        currentFilePointer += maxBlockSize;
+        totalBytesRemaining -= maxBlockSize;
+        if (totalBytesRemaining < maxBlockSize) {
+            maxBlockSize = totalBytesRemaining;
+        }
+        // checkUploadSpeed( 10, function ( speed, average ) {
+        //     document.getElementById( 'speed' ).innerHTML = '<strong>Speed: </strong>' + speed + 'kbs';
+        //     document.getElementById( 'time' ).innerHTML = '<strong>Time Remaining: </strong> ' + Math.round((totalBytesRemaining / 1024) / averageSpeed) + 's';
+        // });
+    } else {
+        commitBlockList();
+    }
+}
+ 
+function commitBlockList() {
+    var uri = submitUri + '&comp=blocklist';
+    console.log(uri);
+    var requestBody = '<?xml version="1.0" encoding="utf-8"?><BlockList>';
+    for (var i = 0; i < blockIds.length; i++) {
+        requestBody += '<Latest>' + blockIds[i] + '</Latest>';
+    }
+    requestBody += '</BlockList>';
+    console.log(requestBody);
+    $.ajax({
+        url: uri,
+        type: "PUT",
+        data: requestBody,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type);
+        },
+        success: function (data, status) {
+            console.log(data);
+            console.log(status);
+        },
+        error: function (xhr, desc, err) {
+            console.log(desc);
+            console.log(err);
+        }
+    });
+
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+
+    fd.append('finished', 'true');
+    fd.append('fileName', fileName);
+    xhr.open("POST", "/upload/upload_data?fileName="+fileName+"&nocache="+new Date().getTime());
+    xhr.send(fd);
+    setTimeout(function () {
+        window.location = window.location.href + "/upload_success";
+    }, 500);
+}
+function pad(number, length) {
+    var str = '' + number;
+    while (str.length < length) {
+        str = '0' + str;
+    }
+    return str;
+}
