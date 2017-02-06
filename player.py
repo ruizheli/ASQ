@@ -118,10 +118,7 @@ def get_files(title):
 	# pymssql part, for testing only
 	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
 	temp_file_name = title
-	video_pwd = os.path.join('static', 'content', temp_file_name)
-
-	p = Process(target=load_video, args=(title, video_pwd,))
-	p.start()
+	video_pwd = 'https://asqdata.blob.core.windows.net/media-file/' + title.split('.')[0]
 	
 	print(title)
 	# logics for uploading
@@ -156,19 +153,5 @@ def player(title, type, keys):
 			time = "%d:%02d:%02d" % (h, m, s)
 			s = s1 + str(int(i[0])) +s2 + k + " (" + time + ")" + s3
 			s_html += s
-	html = html1 + title + html2 + title + html3 + s_html + html4 + user + html5 + course + html6 + education + html7 + category + html8 + "/" + video_pwd + html9 +abstract +html10
+	html = html1 + title + html2 + title + html3 + s_html + html4 + user + html5 + course + html6 + education + html7 + category + html8 + video_pwd + html9 +abstract +html10
 	return html
-	
-def load_video(title, video_pwd):
-	if not os.path.exists("temp"):
-		os.mkdir("temp")
-	content = append_blob_service.get_blob_to_bytes(
-		'media-file',
-		title.split('.')[0],
-		max_connections=10
-	)
-	print(content)
-	
-	tf = open(video_pwd, 'w+b')
-	tf.write(content.content)
-	tf.close()
