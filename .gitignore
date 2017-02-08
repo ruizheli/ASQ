@@ -12,7 +12,7 @@ __pycache__/
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-
+*.pyc
 env/
 virtual/
 resources/
@@ -20,6 +20,8 @@ virtualenv/
 temp/
 transcripts/
 temp_index/
+whoosh/
+whoosh/*.pyc
 .DS_Store
 
 # Installer logs
