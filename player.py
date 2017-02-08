@@ -1,8 +1,8 @@
+from __future__ import unicode_literals
 from bottle import route, run
 import json
 import pymssql
 from azure.storage.blob import AppendBlobService
-from __future__ import unicode_literals
 import os
 from multiprocessing import Process, Queue
 

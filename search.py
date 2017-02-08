@@ -1,10 +1,10 @@
+from __future__ import unicode_literals
 from whoosh.qparser import QueryParser
 import whoosh.index as index
 from whoosh.fields import *
 from bottle import route, run
 from updatekeytimemap import update_key_time_map 
 from azure.storage.blob import AppendBlobService
-from __future__ import unicode_literals
 import pymssql
 import re
 import os

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 # NOTE: Currently pymssql fails on Azure, while pyodbc fails locally. USE pyodbc FOR DEPLOYING!!!
 from bottle import route, run, template, view, redirect, post, request
 import pymssql
@@ -15,7 +16,6 @@ from azure.storage.blob import AppendBlobService
 from pprint import pprint
 from maintest import file_upload
 from multiprocessing import Process, Queue
-from __future__ import unicode_literals
 
 append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 logger = logging.getLogger('asq')
