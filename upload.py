@@ -15,6 +15,7 @@ from azure.storage.blob import AppendBlobService
 from pprint import pprint
 from maintest import file_upload
 from multiprocessing import Process, Queue
+from __future__ import unicode_literals
 
 append_blob_service = AppendBlobService(account_name='asqdata', account_key='FB9fAfnEv1uokM0KZmEbC38EFpxBESFCJKboqQaxSysTudNsRsHTB0HHDv4eSqUV2RUUK7RR9WiplPn0C07LZw==')
 logger = logging.getLogger('asq')
@@ -62,16 +63,16 @@ def upload_data():
 def SQLLoader(form) :
 	print('creating SQL entry')
 	logger.info('creating SQL entry')
-	title = request.forms.get('title')
-	author = request.forms.get('author')
-	tags = request.forms.get('tags')
-	description = request.forms.get('description')
-	category = request.forms.get('category')
-	media_file_name = request.forms.get('fileName').split('.')[0]
+	title = request.forms.get('title').encode('utf-8')
+	author = request.forms.get('author').encode('utf-8')
+	tags = request.forms.get('tags').encode('utf-8')
+	description = request.forms.get('description').encode('utf-8')
+	category = request.forms.get('category').encode('utf-8')
+	media_file_name = request.forms.get('fileName').split('.')[0].encode('utf-8')
 	print(request.forms.get('fileName'))
-	file_type = request.forms.get('fileName').split('.')[1]
-	education = request.forms.get('school')
-	course = request.forms.get('course')
+	file_type = request.forms.get('fileName').split('.')[1].encode('utf-8')
+	education = request.forms.get('school').encode('utf-8')
+	course = request.forms.get('course').encode('utf-8')
 
 	server = 'tcp:asq-file.database.windows.net'
 	database = 'asq-file'

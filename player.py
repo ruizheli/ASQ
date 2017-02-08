@@ -2,6 +2,7 @@ from bottle import route, run
 import json
 import pymssql
 from azure.storage.blob import AppendBlobService
+from __future__ import unicode_literals
 import os
 from multiprocessing import Process, Queue
 
@@ -93,7 +94,7 @@ html10 = """</p>
 				<p>Parrot is brought to you by Ruizhe Li, Ruoxi Li, and Shengyi Chen</p>
 <p>Parrot provides students with an efficient and streamlined way to refresh their memory with important concepts. Students can search for and upload lecture recordings, search any keyword or concept in the recordings, or discover new content to satisfy their intellectual needs. Parrot will take the student to that moment in the lecture with clinical precision. </p><p>
 			<b>Disclaimer: All videos from this site are from YouTube. All rights belong to the original creaters/publishers of these videos. All videos are used for demo purpose only. The site is not intended for any commercial usage. The videos will be deleted immediately once the demo ends. </b>
-			</p>			</div>  
+			</p>				</div>  
 		</footer>
 	</div>
 
@@ -119,9 +120,10 @@ def get_files(title):
 	
 	# pymssql part, for testing only
 	conn = pymssql.connect(server='asq-file.database.windows.net',user='ruizheli@asq-file.database.windows.net', password='Fzj990418.', database='asq-file', tds_version='7.0')
+
 	temp_file_name = title
 	video_pwd = 'https://asqdata.blob.core.windows.net/media-file/' + title.split('.')[0]
-	
+
 	print(title)
 	# logics for uploading
 	cursor = conn.cursor()
@@ -157,3 +159,5 @@ def player(title, type, keys):
 			s_html += s
 	html = html1 + title + html2 + title + html3 + s_html + html4 + user + html5 + course + html6 + education + html7 + category + html8 + video_pwd + html9 +abstract +html10
 	return html
+
+	
