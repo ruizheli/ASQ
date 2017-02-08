@@ -90,11 +90,11 @@ def get_info(title):
 	cursor.execute(query % (str(title),))
 	result = cursor.next()
 
-	title = str(result[0]) 
-	tags = str(result[2]) 
-	education = str(result[8]) 
-	user = str(result[1]) 
-	abstract = str(result[3]) 
+	title = str(result[0].encode('utf-8')) 
+	tags = str(result[2].encode('utf-8')) 
+	education = str(result[8].encode('utf-8')) 
+	user = str(result[1].encode('utf-8')) 
+	abstract = str(result[3].encode('utf-8')) 
 
 	content = append_blob_service.get_blob_to_bytes(
 		'thumbnails',
