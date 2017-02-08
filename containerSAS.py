@@ -2,6 +2,7 @@ import time
 
 from azure.storage import AccessPolicy
 from azure.storage.blob import AppendBlobService, ContentSettings, ContainerPermissions
+from azure.storage.blob import PublicAccess
 
 from datetime import datetime, timedelta
 
@@ -26,7 +27,8 @@ identifiers[policy_name] = access_policy
 # Set the container to the updated list of identifiers (policies)
 append_service.set_container_acl(
 	storage_container_name,
-	identifiers,
+	public_access=PublicAccess.Container,
+	signed_identifiers=identifiers,
 )
 
 # Wait 30 seconds for acl to propagate

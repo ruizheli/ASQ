@@ -387,31 +387,58 @@ function errorHandler(evt) {
 
 // Drop file
 function handleFileDropped(evt) {
-	fileSelected();
-	uploadhint = document.getElementsByClassName("upload_hint");
-	for (var i = 0; i < uploadhint.length; i++) {
-		uploadhint[i].style.display = 'none';
-	}
+    maxBlockSize = 256 * 1024;
+    currentFilePointer = 0;
+    totalBytesRemaining = 0;
+    selectedFile = evt.dataTransfer.files[0];
+    // $("#output").show();
+    document.getElementById('fileName').innerHTML = '<strong>Name:</strong> ' + selectedFile.name;
+    document.getElementById('fileSize').innerHTML = '<strong>Size:</strong> ' + selectedFile.size;
+    document.getElementById('fileType').innerHTML = '<strong>Type:</strong> ' + selectedFile.type;
 
-	uploadshow = document.getElementsByClassName("upload_show");
-	for (var i = 0; i < uploadshow.length; i++) {
-		uploadshow[i].style.display = 'block';
-	}
+    uploadhint = document.getElementsByClassName("upload_hint");
+    for (var i = 0; i < uploadhint.length; i++) {
+      uploadhint[i].style.display = 'none';
+    }
 
-	evt.stopPropagation();
-	evt.preventDefault();
+    uploadshow = document.getElementsByClassName("upload_show");
+    for (var i = 0; i < uploadshow.length; i++) {
+      uploadshow[i].style.display = 'block';
+    }
 
-	var files = evt.dataTransfer.files; // FileList object.
+    progress.style.width = '0%';
+    progress.textContent = '0%';
 
-	progress.style.width = '0%';
-	progress.textContent = '0%';
+    var fileSize = selectedFile.size;
+    if (fileSize < maxBlockSize) {
+        maxBlockSize = fileSize;
+        console.log("max block size = " + maxBlockSize);
+    }
+    totalBytesRemaining = fileSize;
+    if (fileSize % maxBlockSize == 0) {
+        numberOfBlocks = fileSize / maxBlockSize;
+    } else {
+        numberOfBlocks = parseInt(fileSize / maxBlockSize, 10) + 1;
+    }
+    console.log("total blocks = " + numberOfBlocks);
 
-	reader = new FileReader();
-	reader.onerror = errorHandler;
+    var fd = new FormData();
+    var xhr = new XMLHttpRequest();
+    UUID = generateUUID();
+    fileName = UUID + '.' + selectedFile.name.split('.').pop();
 
-	// Read in the image file as a binary string.
-	reader.readAsBinaryString(files[0]);
+    fd.append('geturi', 'true');
+    xhr.open("POST", "/upload/upload_data");
+    xhr.addEventListener("load", function(evt) {
+      var baseUrl = evt.target.responseText;
+      var indexOfQueryStart = baseUrl.indexOf("?");
+      submitUri = baseUrl.substring(0, indexOfQueryStart) + '/' + UUID + baseUrl.substring(indexOfQueryStart);
+      console.log(submitUri);
+    }, false);
+    xhr.send(fd);
 
+    evt.stopPropagation();
+    evt.preventDefault();
 }
 
 
