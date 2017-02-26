@@ -96,16 +96,16 @@ def get_info(title):
 	user = str(result[1]) 
 	abstract = str(result[3]) 
 
-	content = append_blob_service.get_blob_to_bytes(
-		'thumbnails',
-		fn,
-		max_connections=10
-	)
+	# content = append_blob_service.get_blob_to_bytes(
+	# 	'thumbnails',
+	# 	fn,
+	# 	max_connections=10
+	# )
 
 	thumbnail = os.path.join('static', 'content', fn+'.png')
-	tf = open(thumbnail, 'w+b')
-	tf.write(content.content)
-	tf.close()
+	# tf = open(thumbnail, 'w+b')
+	# tf.write(content.content)
+	# tf.close()
 
 	file_type = str(result[10]) 
 	return (title,tags,education,user,abstract,thumbnail,file_type)
