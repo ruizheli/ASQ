@@ -1,4 +1,5 @@
 import subprocess
+from __future__ import unicode_literals
 
 def thumbnail():
 	input_file = "./transcripts/Atom.mp4"

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from whoosh.qparser import QueryParser
 import whoosh.index as index
 from whoosh.fields import *
